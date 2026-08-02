@@ -47,6 +47,6 @@ On APPROVE:
 One screen to the user: verdict, cycles used, gates run, what to demo. Then name the next runnable tickets — open `tars:ready` issues whose blockers are all closed (`gh issue list --label tars:ready`). Do not auto-start the next ticket — the user decides, or says "run the frontier".
 
 ## Hard rules for the orchestrator
-- One ticket at a time per working tree. Parallel tickets require separate git worktrees — only attempt that if the user asks.
+- One ticket at a time per working tree. To run independent tickets concurrently, use `/run-frontier` — it gives each ticket its own git worktree and serializes merges.
 - Never merge without `<verdict>APPROVE</verdict>` from the reviewer sub-agent. Your own reading of the diff is not approval.
 - Never edit the acceptance criteria mid-loop to make a failing ticket pass. Criteria change = stop, back to the user.

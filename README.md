@@ -11,9 +11,10 @@ You don't write code. You write **specs** and **tickets** with machine-checkable
 ```
 /setup-tars      once per project: CLAUDE.md, CONTEXT.md, gates, GitHub labels
 /grill-me        stress-test your idea — the agent interviews you relentlessly
-/to-spec         conversation → spec (GitHub issue, label tars:spec)
+/to-spec         conversation → spec (docs/specs/, versioned with the code)
 /to-tickets      spec → tracer-bullet tickets with blocking edges (tars:ticket issues)
 /run-ticket 14   the loop: planner → implementer → gates → reviewer → merge
+/run-frontier    AFK mode: all unblocked tickets in parallel worktrees, serialized merges
 /code-review     two-axis review (standards + spec) of any branch, on demand
 /handoff         compact the session into a handoff doc for a fresh agent
 ```
