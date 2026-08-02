@@ -26,7 +26,7 @@ Look for the originating spec, in this order:
 
 1. Ticket references in the commit messages or branch name (`task/14-…`, `(#14)`) → `gh issue view 14 --comments`; the issue (body + plan/review comments) is the spec source.
 2. A path or issue number the user passed as an argument.
-3. A spec issue: `gh issue list --label tars:spec` matching the branch name or feature (local fallback: `docs/specs/`).
+3. A spec file under `docs/specs/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
 ### 3. Identify the standards sources

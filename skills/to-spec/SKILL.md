@@ -1,12 +1,12 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it as a GitHub issue — no interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a spec saved to docs/specs/ — no interview, just synthesis of what you've already discussed.
 disable-model-invocation: true
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. If the conversation is too thin to spec from, invoke the `grilling` skill first.
 
-Specs live as GitHub issues (label `tars:spec`) via the `gh` CLI. If `gh` is missing or the repo has no GitHub remote, fall back to `docs/specs/<feature-slug>.md` and tell the user.
+Specs live in the repo at `docs/specs/<feature-slug>.md` — versioned with the code, canonical. (Tickets, by contrast, live as GitHub issues.)
 
 ## Process
 
@@ -16,7 +16,7 @@ Specs live as GitHub issues (label `tars:spec`) via the `gh` CLI. If `gh` is mis
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below, then publish it: `gh issue create --label tars:spec --label tars:draft --title "Spec: <feature>" --body-file -`. Give the user the issue URL. The spec is `draft` until the user approves it — on approval, swap the label: `gh issue edit <N> --remove-label tars:draft --add-label tars:approved`.
+3. Write the spec using the template below to `docs/specs/<feature-slug>.md`, with a `**Status:** draft` line at the very top, and commit it. Tell the user the path. The spec stays `draft` until the user approves — on approval, change the line to `**Status:** approved` and commit. `/to-tickets` refuses to run on a draft spec.
 
 <spec-template>
 

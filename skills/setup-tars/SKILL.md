@@ -15,10 +15,10 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
 2. **Verify GitHub.** `gh auth status` and a GitHub remote must both exist — specs and tickets live as issues. If `gh` is missing or unauthenticated, tell the user to fix it (`gh auth login`) before continuing. If the repo has no GitHub remote, ask the user whether to create one (`gh repo create`) or fall back to local files under `docs/`.
 
 3. **Create the labels** (skip any that exist):
-   - `tars:spec` — a spec/PRD issue
-   - `tars:draft` / `tars:approved` — spec approval state
    - `tars:ticket` — an implementable ticket
    - `tars:ready` / `tars:in-progress` / `tars:blocked` — ticket pipeline state
+
+   (Specs live locally in `docs/specs/` — no spec labels needed.)
 
 4. **Agree the gates.** Propose the project's gate commands and confirm them with the user:
    - Go: `go build ./...`, `go vet ./...`, `go test -race ./...`
@@ -28,6 +28,6 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
 5. **Create the structure:**
    - `CLAUDE.md` — the gate commands, conventions (conventional commits, branch naming `task/<issue>-<slug>`), and the standing rule that no change merges with red gates.
    - `CONTEXT.md` — domain glossary stub. Ask the user for 3–5 core domain terms with one-line definitions to seed it.
-   - `docs/adr/` and `docs/PROGRESS.md` (header `# Progress`, section `## Log`).
+   - `docs/specs/`, `docs/adr/` and `docs/PROGRESS.md` (header `# Progress`, section `## Log`).
 
 6. **Report** what was created and the next move: grill the user about the first feature, then `/to-spec`.

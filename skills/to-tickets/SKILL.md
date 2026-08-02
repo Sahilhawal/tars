@@ -14,7 +14,7 @@ Tickets live as GitHub issues via the `gh` CLI. If `gh` is missing or there is n
 
 ### 1. Gather context
 
-Work from whatever is already in the conversation context. If the user passes a reference (a spec issue number like `#12`, or a spec file path) as an argument, read it in full (`gh issue view 12 --comments`). If the spec still carries the `tars:draft` label, stop and tell the user to approve it first.
+Work from whatever is already in the conversation context. If the user passes a spec reference as an argument (path like `docs/specs/phase-1.md`), read it in full. If its top line says `**Status:** draft`, stop and tell the user to approve the spec first.
 
 ### 2. Explore the codebase (optional)
 
