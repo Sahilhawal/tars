@@ -1,13 +1,8 @@
 <div align="center">
 
-```
-████████╗ █████╗ ██████╗ ███████╗
-╚══██╔══╝██╔══██╗██╔══██╗██╔════╝
-   ██║   ███████║██████╔╝███████╗
-   ██║   ██╔══██║██╔══██╗╚════██║
-   ██║   ██║  ██║██║  ██║███████║
-   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
-```
+<img src="assets/tars.svg" alt="TARS" width="180">
+
+**T A R S**
 
 **An autonomous agent pipeline for [Claude Code](https://claude.ai/code).**
 
