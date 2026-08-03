@@ -77,8 +77,6 @@ gh api repos/$REPO/issues/<prd-N>/sub_issues -F sub_issue_id=$SUB_ID
 
 If the API call fails (older GitHub Enterprise without sub-issues), fall back to a task-list in the PRD issue body (`- [ ] #<ticket>` lines) and say so.
 
-Once every ticket is published and attached, invoke `render-prd` on the parent PRD's issue number — it regenerates the HTML view with the new tickets in it and asks the user whether to open it. Skip this on the local-files fallback.
-
 Each body follows the ticket template below, and its **Blocked by** section references the blocking issues by number (`Blocked by #14, #15` or "None — can start immediately"). Acceptance criteria must be **machine-checkable** wherever possible: name the test, command, or observable behavior that proves each one. Vague criteria make tickets un-runnable by `/run-ticket`.
 
 (Local fallback: write `docs/tickets/<NN>-<slug>.md` files with the same template, `**Status:** ready` in place of labels.)

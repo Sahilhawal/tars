@@ -1,13 +1,13 @@
 ---
 name: render-prd
-description: Render a PRD issue and its nested tickets as a single self-contained HTML file, then ask whether to open it. Use after publishing or updating a PRD (to-spec, to-tickets), or whenever the user wants to view a PRD in the browser.
+description: Render a PRD issue and its nested tickets as a single self-contained HTML file, then ask whether to open it. Use whenever the user wants to view, render, or open a PRD in the browser — never invoked automatically by other skills.
 ---
 
 # Render PRD
 
-Turn a PRD issue into a readable, self-contained HTML file — no server, no build step, no dependency beyond what the file loads from a CDN at view time.
+Turn a PRD issue into a readable, self-contained HTML file — no server, no build step, no dependency beyond what the file loads from a CDN at view time. Runs only when the user asks for it — `/to-spec` and `/to-tickets` don't call this on their own.
 
-**Argument:** a PRD issue number. If invoked right after `/to-spec` publishes one or `/to-tickets` attaches tickets to one, use that number without asking.
+**Argument:** a PRD issue number.
 
 ## Process
 

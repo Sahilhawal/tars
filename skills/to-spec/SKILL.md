@@ -26,8 +26,6 @@ Check with the user that these seams match their expectations.
 
    c. Add a `**Issue:** #<N>` line under the status line in the local file, and commit both changes together.
 
-   d. Invoke `render-prd` on the new issue number — it writes the HTML view and asks the user whether to open it.
-
    The PRD issue is the parent that `/to-tickets` attaches ticket issues to as sub-issues. If an approved PRD later needs rework, edit the issue body and add the `tars:draft` label to it — `/to-tickets` refuses to run against a PRD carrying `tars:draft` until the label is removed.
 
 <spec-template>
