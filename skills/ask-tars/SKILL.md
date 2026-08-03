@@ -1,7 +1,6 @@
 ---
 name: ask-tars
 description: Guided tars setup — interviews you about the things a repo scan can't decide (gates, env files, ports/databases, GitHub vs local), then applies the full bootstrap. The friendly front-end to /setup-tars.
-disable-model-invocation: true
 ---
 
 # Ask tars

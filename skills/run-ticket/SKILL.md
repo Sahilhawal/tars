@@ -1,7 +1,6 @@
 ---
 name: run-ticket
 description: Run one ticket through the autonomous pipeline — plan, implement on a task branch, verify gates, adversarial review, merge on approval. The heart of tars.
-disable-model-invocation: true
 ---
 
 # Run Ticket

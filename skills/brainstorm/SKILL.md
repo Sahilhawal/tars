@@ -1,7 +1,6 @@
 ---
 name: brainstorm
 description: Take a rough feature idea and develop it into a sharper, better-scoped version — grounded in the actual codebase, with concrete suggestions and options. The step before grill-me.
-disable-model-invocation: true
 ---
 
 # Brainstorm

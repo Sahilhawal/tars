@@ -1,7 +1,6 @@
 ---
 name: setup-tars
 description: Bootstrap tars in the current project — CLAUDE.md, CONTEXT.md, docs structure, GitHub labels, gate commands. Run once per project.
-disable-model-invocation: true
 ---
 
 # Setup tars

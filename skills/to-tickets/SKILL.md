@@ -1,7 +1,6 @@
 ---
 name: to-tickets
 description: Break a spec or the current conversation into tracer-bullet tickets, each declaring its blocking edges — one GitHub issue per ticket, attached as sub-issues of the PRD issue.
-disable-model-invocation: true
 ---
 
 # To Tickets

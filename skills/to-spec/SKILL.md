@@ -1,7 +1,6 @@
 ---
 name: to-spec
 description: Turn the current conversation into a spec — drafted in docs/specs/, then published on approval as the PRD issue that tickets attach to as sub-issues.
-disable-model-invocation: true
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. If the conversation is too thin to spec from, invoke the `grilling` skill first.
