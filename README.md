@@ -30,6 +30,7 @@ Every step leaves an audit trail on GitHub: PRDs are parent issues, tickets are 
 
 ```
 /ask-tars        guided setup — interviews you about your project, then bootstraps it
+/brainstorm      rough idea → sharper version: grounded in your codebase, with suggestions
 /grill-me        stress-test your idea — the agent interviews you relentlessly
 /to-spec         conversation → spec: drafted in docs/specs/, published on approval as a PRD issue
 /to-tickets      PRD → tracer-bullet tickets with blocking edges (sub-issues of the PRD)
@@ -101,10 +102,11 @@ Links the working tree into `~/.claude/skills` and `~/.claude/agents` so edits t
 In any project:
 
 1. **`/ask-tars`** (or `/setup-tars` if you prefer the direct path) — scans your repo, agrees gate commands with you, creates the GitHub labels, `CLAUDE.md`, `CONTEXT.md`, and `docs/` structure. Once per project.
-2. **`/grill-me`** — describe your feature; get interviewed until the idea survives.
-3. **`/to-spec`** — the conversation becomes a spec in `docs/specs/`. Approve it and it publishes as the **PRD issue**.
-4. **`/to-tickets`** — the PRD breaks into tracer-bullet ticket sub-issues, each with machine-checkable acceptance criteria and declared blockers.
-5. **`/run-ticket 14`** — or `/run-frontier` and go make coffee. ☕
+2. **`/brainstorm`** — bring a rough idea; leave with a sharper, codebase-grounded version of it.
+3. **`/grill-me`** — the sharpened idea gets interviewed until it survives.
+4. **`/to-spec`** — the conversation becomes a spec in `docs/specs/`. Approve it and it publishes as the **PRD issue**.
+5. **`/to-tickets`** — the PRD breaks into tracer-bullet ticket sub-issues, each with machine-checkable acceptance criteria and declared blockers.
+6. **`/run-ticket 14`** — or `/run-frontier` and go make coffee. ☕
 
 ## 🧱 What tars creates in your project
 
