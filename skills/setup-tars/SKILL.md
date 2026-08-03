@@ -33,4 +33,6 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
    - `CONTEXT.md` — domain glossary stub. Ask the user for 3–5 core domain terms with one-line definitions to seed it.
    - `docs/specs/`, `docs/adr/` and `docs/PROGRESS.md` (header `# Progress`, section `## Log`).
 
-6. **Report** what was created and the next move: grill the user about the first feature, then `/to-spec`.
+6. **Register with the dashboard.** Append this project to the UI's registry so it shows up if `/setup-tars-ui` is installed: read `~/.config/tars/projects.json` (create it as `{"projects": []}` if missing), add `{"path": "<absolute repo root, from `git rev-parse --show-toplevel`>", "name": "<repo directory name>"}` unless an entry with that path already exists, then write it back. Costs nothing if the dashboard is never installed — the file just sits unread.
+
+7. **Report** what was created and the next move: grill the user about the first feature, then `/to-spec`. If the dashboard isn't installed yet, mention `/setup-tars-ui` is available.

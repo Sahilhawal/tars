@@ -32,6 +32,7 @@ Every step leaves an audit trail on GitHub: PRDs are parent issues, tickets are 
 /ask-tars        guided setup — interviews you about your project, then bootstraps it
 /brainstorm      rough idea → sharper version: grounded in your codebase, with suggestions
 /grill-me        stress-test your idea — the agent interviews you relentlessly
+/grill-choices   audit the codebase's existing technical choices — defend each or flag it, on demand
 /to-spec         conversation → spec: drafted in docs/specs/, published on approval as a PRD issue
 /to-tickets      PRD → tracer-bullet tickets with blocking edges (sub-issues of the PRD)
 /run-ticket 14   the loop: planner → implementer → gates → reviewer → merge
@@ -96,28 +97,25 @@ Sessions don't share memory — carry context between them with `/handoff`, or p
 
 ## 📦 Install
 
-### As a plugin — recommended
-
-Available in every project, updates with the repo:
-
 ```
 /plugin marketplace add Sahilhawal/tars
 /plugin install tars@tars
 ```
 
-Every push to `main` is a new version — refresh with `/plugin marketplace update tars`. Plugin skills are namespaced: `/tars:ask-tars`, `/tars:run-ticket`, etc.
+Available in every project, updates with the repo. Every push to `main` is a new version — refresh with `/plugin marketplace update tars`. Plugin skills are namespaced: `/tars:ask-tars`, `/tars:run-ticket`, etc.
 
-### Symlink install — for hacking on tars itself
+## 🖥️ Dashboard (optional)
 
-```bash
-git clone https://github.com/Sahilhawal/tars && cd tars
-./install.sh                    # user-level: available in every project
-./install.sh --project <path>   # single project only
+A local, read-only browser view across every project you've set up with tars — projects, their worktrees, and their PRDs with nested tickets, in one place.
+
+```
+/setup-tars-ui   # once per machine — installs the dashboard's dependencies
+cd ui && npm run dev
 ```
 
-Links the working tree into `~/.claude/skills` and `~/.claude/agents` so edits take effect immediately. Skills are unprefixed (`/run-ticket`).
+Then open `http://localhost:3000`. `/setup-tars` auto-registers every project it bootstraps, so anything you've already run it on shows up immediately. Bound to `localhost` only — no accounts, no auth, nothing exposed beyond your own machine.
 
-**Don't use both** — you'd get every skill twice.
+It's a viewer, not a control plane — it can't start or steer a running agent. To act on a project, use the skills above from a terminal in that project, or see [Steering a running frontier](#steering-a-running-frontier).
 
 ## 🚀 Quickstart
 
@@ -165,7 +163,7 @@ No GitHub remote? Everything degrades to local files under `docs/` — you'll be
 - `skills/` — the workflow (user-invoked orchestrators + model-invoked disciplines)
 - `agents/` — the sub-agent contracts: planner, implementer, reviewer
 - `templates/` — CLAUDE.md / CONTEXT.md seeds for new projects
-- `install.sh` — symlink installer for the dev path
+- `ui/` — the optional local dashboard (Next.js): projects, worktrees, PRDs + tickets
 
 ## ❓ FAQ
 
