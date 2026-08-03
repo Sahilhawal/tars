@@ -1,12 +1,12 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec saved to docs/specs/ — no interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a spec — drafted in docs/specs/, then published on approval as the PRD issue that tickets attach to as sub-issues.
 disable-model-invocation: true
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know. If the conversation is too thin to spec from, invoke the `grilling` skill first.
 
-Specs live in the repo at `docs/specs/<feature-slug>.md` — versioned with the code, canonical. (Tickets, by contrast, live as GitHub issues.)
+Specs are drafted locally at `docs/specs/<feature-slug>.md` — iterated on and approved there, versioned with the code. On approval the spec is **published as the PRD issue** on GitHub (label `tars:prd`), which becomes the parent issue that tickets attach to as sub-issues.
 
 ## Process
 
@@ -16,7 +16,18 @@ Specs live in the repo at `docs/specs/<feature-slug>.md` — versioned with the 
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below to `docs/specs/<feature-slug>.md`, with a `**Status:** draft` line at the very top, and commit it. Tell the user the path. The spec stays `draft` until the user approves — on approval, change the line to `**Status:** approved` and commit. `/to-tickets` refuses to run on a draft spec.
+3. Write the spec using the template below to `docs/specs/<feature-slug>.md`, with a `**Status:** draft` line at the very top, and commit it. Tell the user the path. The spec stays `draft` until the user approves — on approval:
+
+   a. Change the line to `**Status:** approved`.
+   b. **Publish it as the PRD issue** (skip this if the project is on the local-files fallback — no `gh` or no GitHub remote):
+
+      ```
+      gh issue create --label tars:prd --title "PRD: <feature name>" --body-file docs/specs/<feature-slug>.md
+      ```
+
+   c. Add a `**Issue:** #<N>` line under the status line in the local file, and commit both changes together.
+
+   The PRD issue is the parent that `/to-tickets` attaches ticket issues to as sub-issues. If an approved PRD later needs rework, edit the issue body and add the `tars:draft` label to it — `/to-tickets` refuses to run against a PRD carrying `tars:draft` until the label is removed.
 
 <spec-template>
 

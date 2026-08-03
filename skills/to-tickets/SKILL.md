@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: Break a spec or the current conversation into tracer-bullet tickets, each declaring its blocking edges — one GitHub issue per ticket.
+description: Break a spec or the current conversation into tracer-bullet tickets, each declaring its blocking edges — one GitHub issue per ticket, attached as sub-issues of the PRD issue.
 disable-model-invocation: true
 ---
 
@@ -8,13 +8,18 @@ disable-model-invocation: true
 
 Break a plan, spec, or conversation into a set of **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-Tickets live as GitHub issues via the `gh` CLI. If `gh` is missing or there is no GitHub remote, fall back to one local file per ticket under `docs/tickets/<NN>-<slug>.md` and tell the user.
+Tickets live as GitHub issues via the `gh` CLI, attached as **sub-issues of the PRD issue** (the parent spec, label `tars:prd`). If `gh` is missing or there is no GitHub remote, fall back to one local file per ticket under `docs/tickets/<NN>-<slug>.md` and tell the user.
 
 ## Process
 
 ### 1. Gather context
 
-Work from whatever is already in the conversation context. If the user passes a spec reference as an argument (path like `docs/specs/phase-1.md`), read it in full. If its top line says `**Status:** draft`, stop and tell the user to approve the spec first.
+Work from whatever is already in the conversation context. If the user passes a spec reference as an argument, resolve it:
+
+- **A PRD issue number** (e.g. `/to-tickets 12`) — `gh issue view 12`. It must carry the `tars:prd` label. If it carries `tars:draft`, stop and tell the user the PRD isn't approved yet. Remember the number: every ticket becomes a sub-issue of it.
+- **A spec path** (`docs/specs/phase-1.md`) — read it in full. If its top line says `**Status:** draft`, stop and tell the user to approve the spec first. If it has an `**Issue:** #N` line, that issue is the parent PRD. If it's approved but has no issue, publish it first (the `/to-spec` approval step).
+
+If no reference is passed and the conversation contains an approved spec, find its PRD issue the same way. Only work parentless when there is genuinely no spec (small ad-hoc breakdowns) — say so when you do.
 
 ### 2. Explore the codebase (optional)
 
@@ -63,6 +68,16 @@ Create one GitHub issue per ticket, in dependency order (blockers first, so thei
 gh issue create --label tars:ticket --label tars:ready --title "<NN> — <title>" --body-file -
 ```
 
+Then attach each ticket to the PRD issue as a **sub-issue** (GitHub's sub-issues API — no `gh issue` subcommand for this):
+
+```
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+SUB_ID=$(gh issue view <ticket-N> --json databaseId -q .databaseId)
+gh api repos/$REPO/issues/<prd-N>/sub_issues -F sub_issue_id=$SUB_ID
+```
+
+If the API call fails (older GitHub Enterprise without sub-issues), fall back to a task-list in the PRD issue body (`- [ ] #<ticket>` lines) and say so.
+
 Each body follows the ticket template below, and its **Blocked by** section references the blocking issues by number (`Blocked by #14, #15` or "None — can start immediately"). Acceptance criteria must be **machine-checkable** wherever possible: name the test, command, or observable behavior that proves each one. Vague criteria make tickets un-runnable by `/run-ticket`.
 
 (Local fallback: write `docs/tickets/<NN>-<slug>.md` files with the same template, `**Status:** ready` in place of labels.)
@@ -81,6 +96,10 @@ The end-to-end behaviour this ticket makes work, from the user's perspective —
 ## Blocked by
 
 - #<issue>, or "None — can start immediately"
+
+## Parent PRD
+
+- #<prd-issue> (omit when the breakdown is parentless)
 
 </ticket-template>
 

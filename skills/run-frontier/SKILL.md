@@ -1,6 +1,6 @@
 ---
 name: run-frontier
-description: Run all unblocked tickets in parallel — one git worktree per ticket, planners first to detect file overlap, serialized merges into main. The AFK mode of tars.
+description: Run all unblocked tickets in parallel — one git worktree per ticket, planners first to detect file overlap, serialized merges into main. Pass a PRD issue number to scope to its sub-issues. The AFK mode of tars.
 disable-model-invocation: true
 ---
 
@@ -11,7 +11,15 @@ The parallel, AFK version of `/run-ticket`. Computes the **frontier** — open `
 ## The protocol
 
 ### 1. Compute the frontier
-`gh issue list --label tars:ready --state open` — for each, read its **Blocked by** references; a ticket is runnable only if every blocker is closed. List the frontier to the user: ticket #, title, one-line scope.
+`gh issue list --label tars:ready --state open` — for each, read its **Blocked by** references; a ticket is runnable only if every blocker is closed.
+
+If the user passed a PRD issue number (e.g. `/run-frontier 12`), scope the frontier to that PRD's sub-issues:
+
+```
+gh api repos/{owner}/{repo}/issues/12/sub_issues --jq '.[].number'
+```
+
+List the frontier to the user: ticket #, title, one-line scope.
 
 ### 2. Plan all frontier tickets first
 For each runnable ticket, spawn a **planner** sub-agent (they may run in parallel). Each posts its `## Implementation Plan` comment ending with `<status>COMPLETE</status>`.

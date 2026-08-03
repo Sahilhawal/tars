@@ -13,7 +13,7 @@ Drive one ticket through the full autonomous loop. You (the orchestrator) coordi
 ## The loop
 
 ### 0. Pre-flight
-- `gh issue view <N> --comments` — read the ticket fully.
+- `gh issue view <N> --comments` — read the ticket fully. It should be a sub-issue of a PRD issue; the body's **Parent PRD** section names it. View the PRD issue too — it's the spec the planner and reviewer judge against.
 - Check its **Blocked by** references: every blocking issue must be closed. If not, stop and name the open blockers.
 - Check the acceptance criteria are machine-checkable. Vague criteria → stop, invoke `grilling` with the user to sharpen them (update the issue body after).
 - `gh issue edit <N> --remove-label tars:ready --add-label tars:in-progress`

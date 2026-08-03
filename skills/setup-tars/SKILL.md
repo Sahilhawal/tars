@@ -12,13 +12,15 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
 
 1. **Discover the stack.** Inspect the repo (package.json, go.mod, etc.) to determine languages and toolchains. Facts come from the environment, not from asking.
 
-2. **Verify GitHub.** `gh auth status` and a GitHub remote must both exist — specs and tickets live as issues. If `gh` is missing or unauthenticated, tell the user to fix it (`gh auth login`) before continuing. If the repo has no GitHub remote, ask the user whether to create one (`gh repo create`) or fall back to local files under `docs/`.
+2. **Verify GitHub.** `gh auth status` and a GitHub remote must both exist — PRDs and tickets live as issues (parent + sub-issues). If `gh` is missing or unauthenticated, tell the user to fix it (`gh auth login`) before continuing. If the repo has no GitHub remote, ask the user whether to create one (`gh repo create`) or fall back to local files under `docs/`.
 
 3. **Create the labels** (skip any that exist):
-   - `tars:ticket` — an implementable ticket
+   - `tars:prd` — a PRD: the parent spec issue that tickets attach to as sub-issues
+   - `tars:draft` — on a PRD issue: not approved, `/to-tickets` refuses to break it down
+   - `tars:ticket` — an implementable ticket (a sub-issue of a PRD)
    - `tars:ready` / `tars:in-progress` / `tars:blocked` — ticket pipeline state
 
-   (Specs live locally in `docs/specs/` — no spec labels needed.)
+   (Spec *drafts* live locally in `docs/specs/` until approved, then publish as the PRD issue — so `docs/specs/` still gets created below.)
 
 4. **Agree the gates.** Propose the project's gate commands and confirm them with the user:
    - Go: `go build ./...`, `go vet ./...`, `go test -race ./...`
