@@ -10,11 +10,12 @@ You don't write code. You write **specs** and **tickets** with machine-checkable
 
 ```
 /setup-tars      once per project: CLAUDE.md, CONTEXT.md, gates, GitHub labels
+/ask-tars        guided setup: interviews you about gates, env files, ports — then bootstraps
 /grill-me        stress-test your idea — the agent interviews you relentlessly
 /to-spec         conversation → spec: drafted in docs/specs/, published on approval as the PRD issue
 /to-tickets      PRD → tracer-bullet tickets with blocking edges (sub-issues of the PRD issue)
 /run-ticket 14   the loop: planner → implementer → gates → reviewer → merge
-/run-frontier    AFK mode: all unblocked tickets in parallel worktrees, serialized merges
+/run-frontier    AFK mode: unblocked tickets in parallel sibling worktrees (max 3), serialized merges
                  (optionally scoped: /run-frontier 12 runs one PRD's sub-issues)
 /code-review     two-axis review (standards + spec) of any branch, on demand
 /handoff         compact the session into a handoff doc for a fresh agent
@@ -57,7 +58,7 @@ This links the working tree into `~/.claude/skills` and `~/.claude/agents`, so e
 
 **Don't use both** — you'd get every skill twice, once per install path.
 
-Either way: in each project, run `setup-tars` once to bootstrap it (CLAUDE.md, CONTEXT.md, gates, GitHub labels).
+Either way: in each project, run `setup-tars` once to bootstrap it (CLAUDE.md, CONTEXT.md, gates, GitHub labels) — or `ask-tars` if you want to be interviewed through the setup instead.
 
 Requires [Claude Code](https://claude.ai/code) and the `gh` CLI (PRDs and tickets are GitHub issues + sub-issues; local-file fallback exists).
 

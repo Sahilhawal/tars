@@ -13,6 +13,16 @@ Run these verbatim; a change is not done until the relevant gates pass:
 - TS: `npx tsc --noEmit && npx eslint . && npx vitest run`
 -->
 
+## Parallel tickets (/run-frontier)
+
+- Worktrees live in `../<repo>.worktrees/task-<N>-<slug>` — never inside this repo
+- Gitignored `.env*` files are copied from the main checkout into each worktree on creation; dependencies are installed per worktree
+
+<!-- setup-tars: if gates/app need servers or databases, record per-worktree overrides here, e.g.
+- Each worktree sets PORT=3<N> and uses test database <db>_wt<N>
+If not, state "gates are in-process; no per-worktree overrides needed".
+-->
+
 ## Conventions
 
 - Conventional commits (`feat:`, `fix:`, `test:`, `chore:`)

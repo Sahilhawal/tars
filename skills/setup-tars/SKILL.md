@@ -27,6 +27,8 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
    - TypeScript: `npx tsc --noEmit`, `npx eslint .`, `npx vitest run`
    Adjust to what the repo actually has. These exact commands go into CLAUDE.md — agents and hooks run them verbatim.
 
+   **Ask about parallelism:** do the gates (or the app) start servers or touch real databases? If so, `/run-frontier`'s parallel worktrees will collide on ports and shared databases. Agree a per-worktree override convention — e.g. `PORT=3<ticket-number>`, test database suffixed `_wt<N>` — and record it in CLAUDE.md under "Parallel tickets". If everything is in-process and ephemeral, say so there instead.
+
 5. **Create the structure:**
    - `CLAUDE.md` — the gate commands, conventions (conventional commits, branch naming `task/<issue>-<slug>`), and the standing rule that no change merges with red gates.
    - `CONTEXT.md` — domain glossary stub. Ask the user for 3–5 core domain terms with one-line definitions to seed it.

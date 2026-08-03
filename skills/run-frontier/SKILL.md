@@ -31,10 +31,27 @@ Compare the planners' **Files to create/modify** lists across tickets:
 Tell the user the partition: "parallel: #5, #7 · queued: #9 (touches server/main.go, overlaps #7)".
 
 ### 4. Run each ticket in its own worktree
-Per parallel ticket:
+
+Worktrees live **outside the repo**, grouped under one sibling directory — never inside the working tree (no `.gitignore` noise, no watchers indexing 3 extra `node_modules`):
+
 ```
-git worktree add .worktrees/task-<N> -b task/<N>-<slug> main
+git worktree add ../<repo>.worktrees/task-<N>-<slug> -b task/<N>-<slug> main
 ```
+
+**Bootstrap each worktree before spawning its loop** — a fresh worktree has no gitignored files and no dependencies:
+
+1. **Copy env files.** Any gitignored `.env*` file (root or nested) from the main checkout, preserving paths:
+
+   ```
+   for f in $(find . -name '.env*' -type f -not -path '*/node_modules/*' -not -path '*/.git/*'); do
+     git check-ignore -q "$f" && cp --parents "$f" ../<repo>.worktrees/task-<N>-<slug>/
+   done
+   ```
+
+2. **Apply per-worktree overrides** if CLAUDE.md records them (ports, test databases — see `/setup-tars`): e.g. `PORT=3<N>` appended to the worktree's `.env`, test database suffixed `_wt<N>`. Without this, parallel gates collide on the same port or database.
+
+3. **Install dependencies** by lockfile — `pnpm i --frozen-lockfile`, `npm ci`, `yarn install --frozen-lockfile`, `go mod download`. Never copy `node_modules` between worktrees.
+
 Then run the standard `/run-ticket` loop (steps 2–3: implementer → reviewer, max 3 cycles) **with that worktree as the working directory**. Each loop is an independent background agent. Label flips as usual (`tars:in-progress`), so the kanban shows all in-flight tickets.
 
 A ticket that exhausts its cycles gets `tars:blocked`; its worktree stays for inspection. Others continue — one blocked ticket never halts the frontier.
@@ -44,7 +61,7 @@ Work is parallel; merging is not. When a ticket earns `<verdict>APPROVE</verdict
 1. In its worktree: `git fetch origin main && git rebase main` (or `git rebase main` against local main)
 2. Re-run the full gates post-rebase — red gates bounce the ticket back to the implementer with the failure
 3. In the main checkout: `git merge --no-ff task/<N>-<slug>` — never a conflict, the rebase absorbed it
-4. `git worktree remove .worktrees/task-<N>`, delete the branch, `gh issue close <N>`, log to `docs/PROGRESS.md`
+4. `git worktree remove ../<repo>.worktrees/task-<N>-<slug>`, delete the branch, `gh issue close <N>`, log to `docs/PROGRESS.md` — when the group dir is empty, remove `../<repo>.worktrees/` too
 
 Only one merge in flight at a time. If two tickets approve simultaneously, merge in ticket-number order.
 
@@ -55,5 +72,5 @@ One screen: which tickets merged, which blocked (with findings), current frontie
 - Never run two tickets touching the same files in parallel — the planner file lists are the overlap oracle, not vibes.
 - Never merge in parallel. The merge point is a queue of one.
 - Never merge without a fresh post-rebase gate pass and reviewer APPROVE.
-- `.worktrees/` must be in `.gitignore`.
+- Worktrees live in `../<repo>.worktrees/` — never inside the repo's working tree. Each must be bootstrapped (env files, per-worktree port/DB overrides, dependency install) before its loop starts.
 - Parallelism cap: 3. The user may lower it, never raise it past 3 without explicitly saying so.

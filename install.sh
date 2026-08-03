@@ -28,5 +28,5 @@ for agent in "$TARS_DIR"/agents/*.md; do
 done
 
 echo
-echo "Done. Skills: /grill-me /to-spec /to-tickets /run-ticket /code-review /handoff /setup-tars"
+echo "Done. Skills: /ask-tars /grill-me /to-spec /to-tickets /run-ticket /run-frontier /code-review /handoff /setup-tars"
 echo "In each project, run /setup-tars once to bootstrap it."
