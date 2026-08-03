@@ -72,6 +72,28 @@ Computes the **frontier** — tickets whose blockers are all closed — and runs
 
 Scope it to one PRD with `/run-frontier 12`, or say "run until done" and walk away.
 
+### Steering a running frontier
+
+The worktree agents aren't sealed off — you have three channels:
+
+1. **Relay through the main session** — say "tell ticket 14's implementer to use the existing session hook" and the orchestrator delivers it into that worktree's running agent, mid-flight. Works for questions too ("why are ticket 17's gates red?").
+2. **Read the public trail** — plans, reviews, label flips, and commits all land outside the agent: `gh issue view 14 --comments`, `git -C ../<repo>.worktrees/task-14-... log`, or the GitHub UI.
+3. **Take over the worktree** — when an agent finishes or blocks, its worktree stays on disk. `cd` in, start `claude`, continue interactively from where it stopped.
+
+What you can't do is attach a second live session to a running agent — one driver per tree, by design. If you know upfront you'll want to babysit a ticket, run it with `/run-ticket` and leave the rest to the frontier.
+
+### Working your own worktrees
+
+For work outside a frontier run, start one Claude session per worktree — each session is anchored to its own directory:
+
+```bash
+cd ~/code/project-a && claude                                  # main checkout
+cd ~/code/project-a.worktrees/task-14-login && claude          # ticket 14
+cd ~/code/project-a.worktrees/task-17-rate-limit && claude     # ticket 17
+```
+
+Sessions don't share memory — carry context between them with `/handoff`, or point both at the same GitHub issue (tars keeps plans and reviews there precisely so every session shares one source of truth). Merge from the main checkout, one at a time.
+
 ## 📦 Install
 
 ### As a plugin — recommended
