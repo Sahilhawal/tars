@@ -1,0 +1,11 @@
+{
+  "name": "tars",
+  "version": "0.2.0",
+  "description": "An agent pipeline for Claude Code: spec-driven, ticket-by-ticket, adversarially reviewed, gate-enforced. PRDs as parent issues, tickets as sub-issues.",
+  "author": {
+    "name": "sahilhawal"
+  },
+  "homepage": "https://github.com/Sahilhawal/tars",
+  "repository": "https://github.com/Sahilhawal/tars",
+  "keywords": ["workflow", "tdd", "github-issues", "sub-agents", "code-review"]
+}

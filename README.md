@@ -37,15 +37,33 @@ Completion is machine-readable: `<status>COMPLETE|BLOCKED</status>`, `<verdict>A
 
 ## Install
 
+### As a plugin (recommended — available in every project, updates with the repo)
+
+```
+/plugin marketplace add Sahilhawal/tars
+/plugin install tars@tars
+```
+
+The repo is its own marketplace, so every push to `main` is a new version — refresh with `/plugin marketplace update tars`. Plugin skills are namespaced: `/tars:setup-tars`, `/tars:to-spec`, `/tars:run-ticket`, etc.
+
+### Symlink install (for hacking on tars itself)
+
 ```bash
 ./install.sh                    # user-level: available in every project
 ./install.sh --project <path>   # single project only
 ```
 
+This links the working tree into `~/.claude/skills` and `~/.claude/agents`, so edits take effect immediately. Skills are unprefixed (`/setup-tars`, `/run-ticket`).
+
+**Don't use both** — you'd get every skill twice, once per install path.
+
+Either way: in each project, run `setup-tars` once to bootstrap it (CLAUDE.md, CONTEXT.md, gates, GitHub labels).
+
 Requires [Claude Code](https://claude.ai/code) and the `gh` CLI (PRDs and tickets are GitHub issues + sub-issues; local-file fallback exists).
 
 ## Layout
 
+- `.claude-plugin/` — plugin + marketplace manifests (the repo is its own marketplace)
 - `skills/` — the workflow (user-invoked orchestrators + model-invoked disciplines)
 - `agents/` — the sub-agent contracts: planner, implementer, reviewer
 - `templates/` — CLAUDE.md / CONTEXT.md seeds for new projects

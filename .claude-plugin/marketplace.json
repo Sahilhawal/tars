@@ -1,0 +1,13 @@
+{
+  "name": "tars",
+  "owner": {
+    "name": "sahilhawal"
+  },
+  "plugins": [
+    {
+      "name": "tars",
+      "source": "./",
+      "description": "Spec-driven agent pipeline: PRD issue → ticket sub-issues → planner/implementer/reviewer loop with gates. Run /tars:setup-tars once per project."
+    }
+  ]
+}
