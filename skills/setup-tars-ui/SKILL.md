@@ -1,11 +1,11 @@
 ---
 name: setup-tars-ui
-description: One-time, per-machine setup for the tars dashboard — installs the browser UI's dependencies so it can list your registered projects, their worktrees, and PRDs. Use when the user wants to set up, install, or enable the tars UI/dashboard.
+description: Set up and start the tars dashboard — installs the browser UI's dependencies and launches it in the background so it can list your registered projects, their worktrees, and PRDs. Use when the user wants to set up, install, start, enable, or open the tars UI/dashboard.
 ---
 
 # Setup tars UI
 
-Get the local dashboard (`ui/`) ready to run. This is a one-time, per-machine step — it doesn't touch any project, and it never starts a long-running server itself.
+Get the local dashboard (`ui/`) installed and running. Re-running this skill (e.g. after `/plugin marketplace update tars`) is safe — installing is idempotent and starting is a no-op if it's already up.
 
 ## Process
 
@@ -18,9 +18,10 @@ Get the local dashboard (`ui/`) ready to run. This is a one-time, per-machine st
 
 3. **Confirm the registry.** Check `~/.config/tars/projects.json`. If it doesn't exist yet, tell the user the dashboard will start empty until they run `/setup-tars` in at least one project — don't create it yourself, that's `/setup-tars`'s job.
 
-4. **Report how to run it.** This skill only installs — it never starts the server. Tell the user: `cd <ui path> && npm run dev`, then open `http://localhost:3000`. Bound to `localhost` only; nothing to configure, no auth.
+4. **Start it.** Run `./start.sh` from `ui/` — it backgrounds the dev server (`nohup` + `setsid` where available, so it survives this session ending), picks a free port starting at 3000, waits for it to respond, and opens it in the default browser. It's idempotent: if already running, it reports the existing URL instead of starting a second instance. Report the URL it prints back to the user.
 
 ## Hard rules
 
-- Never start a long-running process yourself, backgrounded or not — running the dashboard is the user's own terminal, same as any local dev server.
+- Start it via `ui/start.sh`, never by hand-rolling your own `nohup`/background invocation — the script owns the pidfile/port bookkeeping that makes re-runs idempotent.
 - Never write to `~/.config/tars/projects.json` — that file is owned by `/setup-tars`.
+- To stop it, run `ui/stop.sh` — mention this if the user asks how to shut it down, but don't stop it unprompted.

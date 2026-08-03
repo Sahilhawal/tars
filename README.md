@@ -109,11 +109,10 @@ Available in every project, updates with the repo. Every push to `main` is a new
 A local, read-only browser view across every project you've set up with tars — projects, their worktrees, and their PRDs with nested tickets, in one place.
 
 ```
-/setup-tars-ui   # once per machine — installs the dashboard's dependencies
-cd ui && npm run dev
+/setup-tars-ui
 ```
 
-Then open `http://localhost:3000`. `/setup-tars` auto-registers every project it bootstraps, so anything you've already run it on shows up immediately. Bound to `localhost` only — no accounts, no auth, nothing exposed beyond your own machine.
+Installs dependencies and starts it in the background — opens your browser automatically. Re-running it (e.g. after `/plugin marketplace update tars`) is safe; it's a no-op if already running. `/setup-tars` auto-registers every project it bootstraps, so anything you've already run it on shows up immediately. Bound to `localhost` only — no accounts, no auth, nothing exposed beyond your own machine. It won't survive a reboot on its own — just run `/setup-tars-ui` again.
 
 It's a viewer, not a control plane — it can't start or steer a running agent. To act on a project, use the skills above from a terminal in that project, or see [Steering a running frontier](#steering-a-running-frontier).
 
