@@ -104,18 +104,6 @@ Sessions don't share memory — carry context between them with `/handoff`, or p
 
 Available in every project, updates with the repo. Every push to `main` is a new version — refresh with `/plugin marketplace update tars`. Plugin skills are namespaced: `/tars:ask-tars`, `/tars:run-ticket`, etc.
 
-## 🖥️ Dashboard (optional)
-
-A local, read-only browser view across every project you've set up with tars — projects, their worktrees, and their PRDs with nested tickets, in one place.
-
-```
-/setup-tars-ui
-```
-
-Installs dependencies and starts it in the background — opens your browser automatically. Re-running it (e.g. after `/plugin marketplace update tars`) is safe; it's a no-op if already running. `/setup-tars` auto-registers every project it bootstraps, so anything you've already run it on shows up immediately. Bound to `localhost` only — no accounts, no auth, nothing exposed beyond your own machine. It won't survive a reboot on its own — just run `/setup-tars-ui` again.
-
-It's a viewer, not a control plane — it can't start or steer a running agent. To act on a project, use the skills above from a terminal in that project, or see [Steering a running frontier](#steering-a-running-frontier).
-
 ## 🚀 Quickstart
 
 In any project:
@@ -162,7 +150,6 @@ No GitHub remote? Everything degrades to local files under `docs/` — you'll be
 - `skills/` — the workflow (user-invoked orchestrators + model-invoked disciplines)
 - `agents/` — the sub-agent contracts: planner, implementer, reviewer
 - `templates/` — CLAUDE.md / CONTEXT.md seeds for new projects
-- `ui/` — the optional local dashboard (Next.js): projects, worktrees, PRDs + tickets
 
 ## ❓ FAQ
 
