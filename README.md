@@ -12,7 +12,7 @@ Spec-driven. Ticket-by-ticket. Adversarially reviewed. Gate-enforced.
 
 ![claude code plugin](https://img.shields.io/badge/Claude_Code-plugin-blueviolet)
 ![requires gh cli](https://img.shields.io/badge/requires-gh%20cli-black)
-![version](https://img.shields.io/badge/version-0.2.0-green)
+![version](https://img.shields.io/badge/version-0.3.0-green)
 
 </div>
 
@@ -34,6 +34,7 @@ Every step leaves an audit trail on GitHub: PRDs are parent issues, tickets are 
 /grill-me        stress-test your idea — the agent interviews you relentlessly
 /grill-choices   audit the codebase's existing technical choices — defend each or flag it, on demand
 /to-spec         conversation → spec: drafted in docs/specs/, published on approval as a PRD issue
+/render-prd 12   PRD + its tickets as a self-contained HTML file, opened on request — on demand
 /to-tickets      PRD → tracer-bullet tickets with blocking edges (sub-issues of the PRD)
 /run-ticket 14   the loop: planner → implementer → gates → reviewer → merge
 /run-frontier    AFK mode: unblocked tickets in parallel worktrees (max 3), serialized merges
