@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/tars.svg" alt="TARS" width="180">
+<img src="assets/tars.png" alt="TARS" width="180">
 
 **T A R S**
 
