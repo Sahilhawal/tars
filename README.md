@@ -168,4 +168,4 @@ Named after the robot, not the archive format. It does exactly what its settings
 
 ## 🙏 Credits
 
-Skill format, grilling, tdd, code-review, and to-spec/to-tickets lineage: Matt Pocock's [skills](https://github.com/mattpocock/skills) (MIT). Completion signals, branch strategy, and structured verdicts inspired by [sandcastle](https://github.com/mattpocock/sandcastle).
+Skill format, grilling, tdd, code-review, handoff, and to-spec/to-tickets lineage: Matt Pocock's [skills](https://github.com/mattpocock/skills) (MIT). Completion signals, branch strategy, and structured verdicts inspired by [sandcastle](https://github.com/mattpocock/sandcastle).
