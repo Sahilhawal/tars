@@ -7,6 +7,7 @@ Notable changes to tars. Format loosely follows [Keep a Changelog](https://keepa
 ### Added
 
 - `/grill-choices` — audits the technical choices already baked into a codebase (stack, architecture, key libraries), one at a time, and offers to write the ones that survive as ADRs. The backward-looking companion to `/grill-me`.
+- `/teach` — a persistent local workspace for learning a topic over multiple sessions: mission, glossary, lessons, reference docs, learning records. Ported from Matt Pocock's skills repo; adds a mastery-check gate before a lesson's insight becomes a learning record, reusing `grilling`'s interview pattern instead of taking coverage as evidence of learning. The one tars skill that isn't about shipping code.
 - `/render-prd <N>` — renders a PRD and its nested tickets as a single self-contained HTML file (no build step, no server) and asks before opening it. Purely on-demand — not called automatically by `/to-spec` or `/to-tickets`.
 - `LICENSE` (MIT), matching the license of the projects tars's own skill lineage is credited to.
 

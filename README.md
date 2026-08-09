@@ -40,6 +40,7 @@ Every step leaves an audit trail on GitHub: PRDs are parent issues, tickets are 
 /run-frontier    AFK mode: unblocked tickets in parallel worktrees (max 3), serialized merges
 /code-review     two-axis review (standards + spec) of any branch, on demand
 /handoff         compact the session into a handoff doc for a fresh agent
+/teach           learn a concept in a persistent local workspace — lessons, glossary, mastery checks
 ```
 
 The issue tree on GitHub mirrors the plan:
@@ -168,4 +169,4 @@ Named after the robot, not the archive format. It does exactly what its settings
 
 ## 🙏 Credits
 
-Skill format, grilling, tdd, code-review, handoff, and to-spec/to-tickets lineage: Matt Pocock's [skills](https://github.com/mattpocock/skills) (MIT). Completion signals, branch strategy, and structured verdicts inspired by [sandcastle](https://github.com/mattpocock/sandcastle).
+Skill format, grilling, tdd, code-review, handoff, teach, and to-spec/to-tickets lineage: Matt Pocock's [skills](https://github.com/mattpocock/skills) (MIT). Completion signals, branch strategy, and structured verdicts inspired by [sandcastle](https://github.com/mattpocock/sandcastle).
