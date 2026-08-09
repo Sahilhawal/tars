@@ -9,6 +9,10 @@ Drive one ticket through the full autonomous loop. You (the orchestrator) coordi
 
 **Argument:** a ticket issue number (e.g. `/run-ticket 14`). Tickets are GitHub issues; status is tracked with labels (`tars:ready`, `tars:in-progress`, `tars:blocked`; closed = done). If the project uses the local-files fallback instead, the same loop applies with ticket files under `docs/tickets/` and a `**Status:**` line in place of labels.
 
+## Progress log
+
+Every step below, and every sub-agent it spawns, appends a line to a shared status log at `$(git rev-parse --git-common-dir)/tars-status.log` — one file, disposable, not part of the audit trail (GitHub issues remain the source of truth). The user shouldn't need to read this file directly — if they ask where things are, use the `status` skill to answer from it. (It can also be tailed directly: `tail -f "$(git rev-parse --git-common-dir)/tars-status.log"`.)
+
 ## The loop
 
 ### 0. Pre-flight
@@ -17,19 +21,20 @@ Drive one ticket through the full autonomous loop. You (the orchestrator) coordi
 - Check the acceptance criteria are machine-checkable. Vague criteria → stop, invoke `grilling` with the user to sharpen them (update the issue body after).
 - `gh issue edit <N> --remove-label tars:ready --add-label tars:in-progress`
 - Create branch `task/<N>-<slug>` from an up-to-date `main`.
+- Log it: `echo "$(date '+%Y-%m-%d %H:%M:%S') #<N> orchestrator: starting run-ticket" >> "$(git rev-parse --git-common-dir)/tars-status.log"`
 
 ### 1. Plan
-Spawn the **planner** sub-agent with the issue number. It posts its implementation plan as an issue comment. If it ends `<status>BLOCKED</status>` with an ambiguity, surface the question to the user and stop.
+Log `#<N> orchestrator: spawning planner`, then spawn the **planner** sub-agent with the issue number. It posts its implementation plan as an issue comment. If it ends `<status>BLOCKED</status>` with an ambiguity, surface the question to the user and stop.
 
 ### 2. Implement
-Spawn the **implementer** sub-agent with the issue number and the gate commands from CLAUDE.md. It works test-first (pass it the `tdd` skill's seam and anti-pattern rules), commits on the task branch, and ends with a completion signal:
+Log `#<N> orchestrator: spawning implementer`, then spawn the **implementer** sub-agent with the issue number and the gate commands from CLAUDE.md. It works test-first (pass it the `tdd` skill's seam and anti-pattern rules), commits on the task branch, and ends with a completion signal:
 - `<status>COMPLETE</status>` — gates green, criteria checked
 - `<status>BLOCKED</status>` + reason — gates still failing after 5 fix iterations
 
 BLOCKED → show the user the failure verbatim and stop.
 
 ### 3. Review
-Spawn the **reviewer** sub-agent with the issue number and diff range `main...HEAD`. It re-runs the gates itself and posts its review as an issue comment, ending with:
+Log `#<N> orchestrator: spawning reviewer (cycle <c>/3)`, then spawn the **reviewer** sub-agent with the issue number and diff range `main...HEAD`. It re-runs the gates itself and posts its review as an issue comment, ending with:
 - `<verdict>APPROVE</verdict>`
 - `<verdict>REJECT</verdict>` + numbered findings (file:line, defect, required change)
 
@@ -42,6 +47,7 @@ On APPROVE:
 - `gh pr create --base main --head task/<N>-<slug> --title "feat: <ticket title> (#<N>)" --body "Closes #<N>."` — the `Closes #<N>` keyword auto-closes the ticket when the PR is merged.
 - `gh issue edit <N> --remove-label tars:in-progress --add-label tars:in-review`.
 - Append one line to `docs/PROGRESS.md`: ticket #, branch, PR link, one-sentence outcome.
+- Log `#<N> orchestrator: PR opened`.
 
 tars never merges. Opening the PR is the last automated step — merging `task/<N>-<slug>` into `main` is yours, whenever you're ready.
 

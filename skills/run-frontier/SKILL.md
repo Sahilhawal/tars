@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 The parallel, AFK version of `/run-ticket`. Computes the **frontier** — open `tars:ready` tickets whose blockers are all closed — and runs independent tickets concurrently, each in its own git worktree. You (the orchestrator) coordinate; sub-agents do the work.
 
+Every ticket's sub-agents share one status log across all worktrees — `git rev-parse --git-common-dir` resolves to the same `.git` directory no matter which worktree the command runs from. If the user asks where things are mid-run, use the `status` skill to read it and answer per-ticket rather than pointing them at the file. (It can also be tailed directly: `tail -f "$(git rev-parse --git-common-dir)/tars-status.log"`, which interleaves every ticket's current step without opening each worktree.)
+
 ## The protocol
 
 ### 1. Compute the frontier

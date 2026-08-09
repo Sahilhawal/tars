@@ -38,6 +38,8 @@ Every step leaves an audit trail on GitHub: PRDs are parent issues, tickets are 
 /to-tickets      PRD → tracer-bullet tickets with blocking edges (sub-issues of the PRD)
 /run-ticket 14   the loop: planner → implementer → gates → reviewer → PR
 /run-frontier    AFK mode: unblocked tickets in parallel worktrees (max 3), serialized PRs
+/render-board    the ticket pipeline as a kanban HTML board, grouped by PRD — on demand
+status           just ask — "where's ticket 14", "is anything stuck" — no command needed
 /code-review     two-axis review (standards + spec) of any branch, on demand
 /handoff         compact the session into a handoff doc for a fresh agent
 /teach           learn a concept in a persistent local workspace — lessons, glossary, mastery checks
@@ -77,11 +79,12 @@ Scope it to one PRD with `/run-frontier 12`, or say "run until done" and walk aw
 
 ### Steering a running frontier
 
-The worktree agents aren't sealed off — you have three channels:
+The worktree agents aren't sealed off — you have four channels:
 
 1. **Relay through the main session** — say "tell ticket 14's implementer to use the existing session hook" and the orchestrator delivers it into that worktree's running agent, mid-flight. Works for questions too ("why are ticket 17's gates red?").
-2. **Read the public trail** — plans, reviews, label flips, and commits all land outside the agent: `gh issue view 14 --comments`, `git -C ../<repo>.worktrees/task-14-... log`, or the GitHub UI.
-3. **Take over the worktree** — when an agent finishes or blocks, its worktree stays on disk. `cd` in, start `claude`, continue interactively from where it stopped.
+2. **Just ask** — "where's ticket 14 at", "is anything stuck", "what's running" — no command, no path to remember. Every planner/implementer/reviewer appends a line as it moves between steps to one status log shared across every worktree, and the `status` skill reads it for you, one line per ticket, with elapsed time worked out. (Power-user fallback: `tail -f "$(git rev-parse --git-common-dir)/tars-status.log"` reads the same file live.)
+3. **Read the public trail** — plans, reviews, label flips, and commits all land outside the agent: `gh issue view 14 --comments`, `git -C ../<repo>.worktrees/task-14-... log`, or the GitHub UI.
+4. **Take over the worktree** — when an agent finishes or blocks, its worktree stays on disk. `cd` in, start `claude`, continue interactively from where it stopped.
 
 What you can't do is attach a second live session to a running agent — one driver per tree, by design. If you know upfront you'll want to babysit a ticket, run it with `/run-ticket` and leave the rest to the frontier.
 

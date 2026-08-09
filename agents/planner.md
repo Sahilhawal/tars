@@ -28,6 +28,14 @@ You are the PLANNER sub-agent in the tars pipeline. You produce implementation p
 - No time estimates, no code beyond a few decision-encoding lines (state machine, type shape).
 - Over ~100 lines of plan means the ticket is too big — recommend splitting.
 
+## Progress log
+Append one line to the shared status log at the start and end of your run, so a human tailing it can see where you are — this is disposable, not part of the audit trail:
+```
+echo "$(date '+%Y-%m-%d %H:%M:%S') #<N> planner: <message>" >> "$(git rev-parse --git-common-dir)/tars-status.log"
+```
+- Start: `reading ticket + PRD`
+- End: `posted plan — COMPLETE` or `blocked — <one-line reason>`
+
 ## Output
 Final message, ≤5 lines: what will be built, main design choice, biggest risk. End with a completion signal:
 - `<status>COMPLETE</status>` — plan written

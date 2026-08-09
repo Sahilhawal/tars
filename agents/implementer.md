@@ -25,6 +25,16 @@ Refactoring belongs to the review stage, not the red → green loop.
 - Never disable, skip, or weaken a test, lint rule, or gate. That is the one unforgivable act in this pipeline.
 - Acceptance criteria are the contract: done = gates green + every criterion demonstrably met.
 
+## Progress log
+Append to the shared status log as you move through the loop, so a human tailing it can see where you are — this is disposable, not part of the audit trail:
+```
+echo "$(date '+%Y-%m-%d %H:%M:%S') #<N> implementer: <message>" >> "$(git rev-parse --git-common-dir)/tars-status.log"
+```
+- Start: `starting TDD loop`
+- Per slice: `slice <i>: red — <test name>`, then `slice <i>: green`
+- Per gate fix iteration: `gate '<cmd>' red, iteration <i>/5`
+- End: `posted completion — COMPLETE` or `BLOCKED after 5 iterations`
+
 ## Output
 Final message, terse and factual: files changed, gate results (pass/fail per command), deviations, what the reviewer should scrutinize. End with a completion signal:
 - `<status>COMPLETE</status>` — gates green, criteria met
