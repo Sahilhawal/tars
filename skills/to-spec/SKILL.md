@@ -15,7 +15,11 @@ Specs are drafted locally at `docs/specs/<feature-slug>.md` — iterated on and 
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below to `docs/specs/<feature-slug>.md`, with a `**Status:** draft` line at the very top, and commit it. Tell the user the path. The spec stays `draft` until the user approves — on approval:
+3. Write the spec using the template below to `docs/specs/<feature-slug>.md`, with a `**Status:** draft` line at the very top, and commit it. Tell the user the path.
+
+   Then render it: follow the **Local mode** of the `render-prd` skill with `docs/specs/<feature-slug>.md` as the argument. It writes a disposable HTML preview to the temp dir and opens it in the browser automatically — no need to ask first. Do this now, and again every time the spec file changes during iteration (edits, revisions before approval) — the point is to let the user catch problems by eye before the PRD goes any further.
+
+   The spec stays `draft` until the user approves — on approval:
 
    a. Change the line to `**Status:** approved`.
    b. **Publish it as the PRD issue** (skip this if the project is on the local-files fallback — no `gh` or no GitHub remote):
@@ -25,6 +29,7 @@ Check with the user that these seams match their expectations.
       ```
 
    c. Add a `**Issue:** #<N>` line under the status line in the local file, and commit both changes together.
+   d. Render once more (local mode again — the file is still on disk) so the preview picks up the `**Issue:** #<N>` line and shows the GitHub link.
 
    The PRD issue is the parent that `/to-tickets` attaches ticket issues to as sub-issues. If an approved PRD later needs rework, edit the issue body and add the `tars:draft` label to it — `/to-tickets` refuses to run against a PRD carrying `tars:draft` until the label is removed.
 
@@ -65,6 +70,32 @@ A list of implementation decisions that were made. This can include:
 Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
 
 Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+
+## Feature Flows (illustrative)
+
+For each major feature or user-facing flow — group related user stories, don't do this per story, and skip trivial CRUD flows that don't need explanation — sketch:
+
+- A short paragraph naming the flow and what triggers it.
+- A mermaid flowchart of the high-level logic path:
+
+  ```mermaid
+  graph TD
+    A[Trigger] --> B{Decision point}
+    B -->|yes| C[Path A]
+    B -->|no| D[Path B]
+  ```
+
+- An illustrative call stack as a fenced (non-mermaid) code block — nested pseudocode showing roughly what calls what:
+
+  ```
+  handleCheckout()
+  ├─ validateCart()
+  ├─ chargePayment()
+  │   └─ stripeClient.charge()
+  └─ sendConfirmationEmail()
+  ```
+
+State plainly, once, at the top of this section: these are illustrative sketches to sanity-check the intended logic before anything is built — not the actual implementation. Names, module boundaries, and call order will very likely change once the code is written. Keep it to 2-4 flows.
 
 ## Testing Decisions
 
