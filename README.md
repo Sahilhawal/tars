@@ -8,7 +8,7 @@
 
 Spec-driven. Ticket-by-ticket. Adversarially reviewed. Gate-enforced.
 
-*Honesty parameter: 100%. Your code merges when it earns it.*
+*Honesty parameter: 100%. Your code earns its PR — you pull the merge trigger.*
 
 ![claude code plugin](https://img.shields.io/badge/Claude_Code-plugin-blueviolet)
 ![requires gh cli](https://img.shields.io/badge/requires-gh%20cli-black)
@@ -20,7 +20,7 @@ Spec-driven. Ticket-by-ticket. Adversarially reviewed. Gate-enforced.
 
 ## 🤖 What is tars?
 
-You don't write code. You write **specs** and **tickets** with machine-checkable acceptance criteria — then tars drives a loop of sub-agents that plan, implement (test-first, on a task branch), and adversarially review each ticket, merging only when quality gates pass and the reviewer approves.
+You don't write code. You write **specs** and **tickets** with machine-checkable acceptance criteria — then tars drives a loop of sub-agents that plan, implement (test-first, on a task branch), and adversarially review each ticket, opening a PR only when quality gates pass and the reviewer approves. You merge it.
 
 Humans steer at the spec and milestone level. TARS does the rowing.
 
@@ -36,8 +36,8 @@ Every step leaves an audit trail on GitHub: PRDs are parent issues, tickets are 
 /to-spec         conversation → spec: drafted in docs/specs/, published on approval as a PRD issue
 /render-prd 12   PRD + its tickets as a self-contained HTML file, opened on request — on demand
 /to-tickets      PRD → tracer-bullet tickets with blocking edges (sub-issues of the PRD)
-/run-ticket 14   the loop: planner → implementer → gates → reviewer → merge
-/run-frontier    AFK mode: unblocked tickets in parallel worktrees (max 3), serialized merges
+/run-ticket 14   the loop: planner → implementer → gates → reviewer → PR
+/run-frontier    AFK mode: unblocked tickets in parallel worktrees (max 3), serialized PRs
 /code-review     two-axis review (standards + spec) of any branch, on demand
 /handoff         compact the session into a handoff doc for a fresh agent
 /teach           learn a concept in a persistent local workspace — lessons, glossary, mastery checks
@@ -60,7 +60,7 @@ ticket ─▶ planner sub-agent      posts implementation plan (issue comment)
               │ gates red ×5 → BLOCKED, escalate to human
        ─▶ reviewer sub-agent     re-runs gates, hunts vacuous tests/races/scope creep
               │ REJECT → back to implementer (max 3 cycles) → tars:blocked
-       ─▶ APPROVE → merge --no-ff to main, close issue, log PROGRESS.md
+       ─▶ APPROVE → open PR, log PROGRESS.md — you merge, which closes the issue
 ```
 
 ## 🛰️ AFK mode (`/run-frontier`)
@@ -70,7 +70,7 @@ Computes the **frontier** — tickets whose blockers are all closed — and runs
 - Each ticket gets its own **git worktree** at `../<repo>.worktrees/task-<N>-<slug>` (never inside your repo)
 - Worktrees are **bootstrapped automatically**: gitignored `.env*` files copied over, dependencies installed, per-worktree port/database overrides applied (so 3 parallel test runs don't collide)
 - Planners run **first**, and their file lists are the overlap oracle — two tickets touching the same files never run in parallel
-- Merges are **serialized**: work is parallel, the merge point is a queue of one
+- PR creation is **serialized**: work is parallel, opening a PR is a queue of one — merging is always yours
 - Parallelism cap: **3**
 
 Scope it to one PRD with `/run-frontier 12`, or say "run until done" and walk away.
@@ -124,12 +124,12 @@ In any project:
 | PRDs | GitHub issues (`tars:prd`) | The parent spec each feature hangs off |
 | Tickets | GitHub sub-issues (`tars:ticket`) | Tracer-bullet slices with blocking edges |
 | Plans & reviews | Issue comments | The audit trail, in the open |
-| Gates | `CLAUDE.md` | Commands agents run verbatim — red gates, no merge |
+| Gates | `CLAUDE.md` | Commands agents run verbatim — red gates, no PR |
 | Glossary | `CONTEXT.md` | Domain vocabulary shared by code, tests, and agents |
 | Decisions | `docs/adr/` | Architecture decisions code must not contradict |
-| History | `docs/PROGRESS.md` | One line per merged ticket |
+| History | `docs/PROGRESS.md` | One line per ticket, logged when its PR opens |
 
-Labels: `tars:prd` · `tars:draft` (PRD under rework) · `tars:ticket` · `tars:ready` / `tars:in-progress` / `tars:blocked`.
+Labels: `tars:prd` · `tars:draft` (PRD under rework) · `tars:ticket` · `tars:ready` / `tars:in-progress` / `tars:in-review` / `tars:blocked`.
 
 No GitHub remote? Everything degrades to local files under `docs/` — you'll be told when it happens.
 
@@ -156,13 +156,13 @@ No GitHub remote? Everything degrades to local files under `docs/` — you'll be
 ## ❓ FAQ
 
 **Does it write code without me?**
-Yes — that's the point. You approve the spec, the ticket breakdown, and nothing else unless something blocks. Every merge required green gates and an adversarial reviewer's explicit APPROVE.
+Yes — that's the point. You approve the spec, the ticket breakdown, and nothing else unless something blocks. Every PR required green gates and an adversarial reviewer's explicit APPROVE. tars stops there — merging to `main` is always your call.
 
 **What stops it from going off the rails?**
 Machine-checkable acceptance criteria, gates that run verbatim, a reviewer whose default answer is REJECT, a 3-cycle cap before escalation, and a rule that acceptance criteria never change mid-loop to make a failing ticket pass.
 
 **Can I run tickets in parallel?**
-`/run-frontier` — up to 3, each in its own bootstrapped worktree, merges serialized. One blocked ticket never halts the frontier.
+`/run-frontier` — up to 3, each in its own bootstrapped worktree, PR creation serialized. One blocked ticket never halts the frontier.
 
 **Why "tars"?**
 Named after the robot, not the archive format. It does exactly what its settings say it will.

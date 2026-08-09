@@ -1,6 +1,6 @@
 ---
 name: run-ticket
-description: Run one ticket through the autonomous pipeline — plan, implement on a task branch, verify gates, adversarial review, merge on approval. The heart of tars.
+description: Run one ticket through the autonomous pipeline — plan, implement on a task branch, verify gates, adversarial review, open a PR on approval. The heart of tars.
 ---
 
 # Run Ticket
@@ -35,17 +35,21 @@ Spawn the **reviewer** sub-agent with the issue number and diff range `main...HE
 
 REJECT → return to step 2 with the findings pasted into the implementer's prompt. Maximum **3 implement–review cycles**; after the third REJECT, `gh issue edit <N> --add-label tars:blocked`, report all findings, and stop for the user.
 
-### 4. Merge
+### 4. Open PR
 On APPROVE:
-- Merge `task/<N>-<slug>` into `main` (`--no-ff`, so ticket boundaries stay visible in history) with message `feat: <ticket title> (#<N>)`.
-- Delete the task branch.
-- `gh issue close <N>` — unchecked acceptance-criterion boxes get checked first via a final comment confirming each was verified.
-- Append one line to `docs/PROGRESS.md`: ticket #, branch, one-sentence outcome.
+- Unchecked acceptance-criterion boxes get checked first via a final issue comment confirming each was verified.
+- Push the task branch: `git push -u origin task/<N>-<slug>`.
+- `gh pr create --base main --head task/<N>-<slug> --title "feat: <ticket title> (#<N>)" --body "Closes #<N>."` — the `Closes #<N>` keyword auto-closes the ticket when the PR is merged.
+- `gh issue edit <N> --remove-label tars:in-progress --add-label tars:in-review`.
+- Append one line to `docs/PROGRESS.md`: ticket #, branch, PR link, one-sentence outcome.
+
+tars never merges. Opening the PR is the last automated step — merging `task/<N>-<slug>` into `main` is yours, whenever you're ready.
 
 ### 5. Report
-One screen to the user: verdict, cycles used, gates run, what to demo. Then name the next runnable tickets — open `tars:ready` issues whose blockers are all closed (`gh issue list --label tars:ready`). Do not auto-start the next ticket — the user decides, or says "run the frontier".
+One screen to the user: verdict, cycles used, gates run, the PR link, what to demo. Then name the next runnable tickets — open `tars:ready` issues whose blockers are all closed (`gh issue list --label tars:ready`). Note that a blocker only clears once its ticket's PR is actually merged, not just opened. Do not auto-start the next ticket — the user decides, or says "run the frontier".
 
 ## Hard rules for the orchestrator
-- One ticket at a time per working tree. To run independent tickets concurrently, use `/run-frontier` — it gives each ticket its own git worktree and serializes merges.
-- Never merge without `<verdict>APPROVE</verdict>` from the reviewer sub-agent. Your own reading of the diff is not approval.
+- One ticket at a time per working tree. To run independent tickets concurrently, use `/run-frontier` — it gives each ticket its own git worktree and serializes PR creation.
+- Never open a PR without `<verdict>APPROVE</verdict>` from the reviewer sub-agent. Your own reading of the diff is not approval.
+- Never merge to `main`. That's the user's call, always.
 - Never edit the acceptance criteria mid-loop to make a failing ticket pass. Criteria change = stop, back to the user.

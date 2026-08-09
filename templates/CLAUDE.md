@@ -2,7 +2,7 @@
 
 ## Pipeline
 
-This project is built with **tars** — an agent pipeline. Specs and tickets are GitHub issues (`tars:*` labels). Work happens on `task/<issue>-<slug>` branches, merges to `main` only after reviewer APPROVE and green gates.
+This project is built with **tars** — an agent pipeline. Specs and tickets are GitHub issues (`tars:*` labels). Work happens on `task/<issue>-<slug>` branches; tars opens a PR to `main` only after reviewer APPROVE and green gates — merging it is on you.
 
 ## Quality gates
 

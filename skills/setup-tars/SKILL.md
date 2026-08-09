@@ -17,7 +17,7 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
    - `tars:prd` — a PRD: the parent spec issue that tickets attach to as sub-issues
    - `tars:draft` — on a PRD issue: not approved, `/to-tickets` refuses to break it down
    - `tars:ticket` — an implementable ticket (a sub-issue of a PRD)
-   - `tars:ready` / `tars:in-progress` / `tars:blocked` — ticket pipeline state
+   - `tars:ready` / `tars:in-progress` / `tars:in-review` / `tars:blocked` — ticket pipeline state (`tars:in-review` means a PR is open, awaiting the user's merge)
 
    (Spec *drafts* live locally in `docs/specs/` until approved, then publish as the PRD issue — so `docs/specs/` still gets created below.)
 

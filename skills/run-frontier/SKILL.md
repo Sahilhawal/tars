@@ -1,6 +1,6 @@
 ---
 name: run-frontier
-description: Run all unblocked tickets in parallel — one git worktree per ticket, planners first to detect file overlap, serialized merges into main. Pass a PRD issue number to scope to its sub-issues. The AFK mode of tars.
+description: Run all unblocked tickets in parallel — one git worktree per ticket, planners first to detect file overlap, serialized PR creation. Pass a PRD issue number to scope to its sub-issues. The AFK mode of tars.
 disable-model-invocation: true
 ---
 
@@ -56,21 +56,23 @@ Then run the standard `/run-ticket` loop (steps 2–3: implementer → reviewer,
 
 A ticket that exhausts its cycles gets `tars:blocked`; its worktree stays for inspection. Others continue — one blocked ticket never halts the frontier.
 
-### 5. Serialize the merges
-Work is parallel; merging is not. When a ticket earns `<verdict>APPROVE</verdict>`:
+### 5. Serialize the PRs
+Work is parallel; opening PRs is not. When a ticket earns `<verdict>APPROVE</verdict>`:
 1. In its worktree: `git fetch origin main && git rebase main` (or `git rebase main` against local main)
 2. Re-run the full gates post-rebase — red gates bounce the ticket back to the implementer with the failure
-3. In the main checkout: `git merge --no-ff task/<N>-<slug>` — never a conflict, the rebase absorbed it
-4. `git worktree remove ../<repo>.worktrees/task-<N>-<slug>`, delete the branch, `gh issue close <N>`, log to `docs/PROGRESS.md` — when the group dir is empty, remove `../<repo>.worktrees/` too
+3. `git push -u origin task/<N>-<slug>`
+4. `gh pr create --base main --head task/<N>-<slug> --title "feat: <ticket title> (#<N>)" --body "Closes #<N>."`, then `gh issue edit <N> --remove-label tars:in-progress --add-label tars:in-review`
+5. `git worktree remove ../<repo>.worktrees/task-<N>-<slug>`, log the PR link to `docs/PROGRESS.md` — when the group dir is empty, remove `../<repo>.worktrees/` too
 
-Only one merge in flight at a time. If two tickets approve simultaneously, merge in ticket-number order.
+Leave the branch and issue alone otherwise — merging (and the resulting issue close via `Closes #<N>`) is the user's call. Only one PR opened at a time. If two tickets approve simultaneously, open PRs in ticket-number order.
 
 ### 6. Report and recompute
-One screen: which tickets merged, which blocked (with findings), current frontier. Newly unblocked tickets form the next frontier — ask the user before starting the next round (or continue automatically if they said "AFK" / "run until done").
+One screen: which tickets have PRs open (with links), which blocked (with findings), current frontier. A ticket's blockers only clear once its blocking ticket is actually **merged** on GitHub, not just PR'd — so the next round may be waiting on you, not on tars. Newly unblocked tickets form the next frontier — ask the user before starting the next round (or continue automatically if they said "AFK" / "run until done", checking back once you've merged the blocking PRs).
 
 ## Hard rules
 - Never run two tickets touching the same files in parallel — the planner file lists are the overlap oracle, not vibes.
-- Never merge in parallel. The merge point is a queue of one.
-- Never merge without a fresh post-rebase gate pass and reviewer APPROVE.
+- Never open PRs in parallel. PR creation is a queue of one.
+- Never open a PR without a fresh post-rebase gate pass and reviewer APPROVE.
+- Never merge to `main`. That's the user's call, always — tars stops at opening the PR.
 - Worktrees live in `../<repo>.worktrees/` — never inside the repo's working tree. Each must be bootstrapped (env files, per-worktree port/DB overrides, dependency install) before its loop starts.
 - Parallelism cap: 3. The user may lower it, never raise it past 3 without explicitly saying so.
