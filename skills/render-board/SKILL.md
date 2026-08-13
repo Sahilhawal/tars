@@ -5,7 +5,7 @@ description: Render the ticket pipeline as a single self-contained kanban HTML f
 
 # Render Board
 
-Turn the live label state of every ticket into a kanban board — no server, no build step, nothing beyond what the CDN script the file loads at view time.
+Turn the live label state of every ticket into a kanban board — no server, no build step, nothing beyond the Google Fonts link the file loads at view time. Shares its visual system with `render-prd` — same tokens, same IBM Plex type family — so the board and the PRD doc read as one product.
 
 **Argument:** an optional PRD issue number. `/render-board` boards every open PRD's tickets; `/render-board 12` scopes to one PRD.
 
@@ -38,46 +38,149 @@ Write to `<tmpdir>/tars-board.html` (scoped: `<tmpdir>/tars-board-<n>.html`), wh
 
 HTML-escape every title (`&`→`&amp;`, `<`→`&lt;`, `>`→`&gt;`) — issue titles are untrusted text.
 
+The design is the same **spec sheet** system `render-prd` uses — title block, IBM Plex Serif/Sans/Mono, cool paper ground with a rust-orange accent — extended with one more semantic token, `--review`, for the In Review column that render-prd's ticket cards don't need. Copy the tokens and fonts exactly so the two pages match.
+
 ```html
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Board — tars</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #eef0f2;
+        --surface: #ffffff;
+        --ink: #1a2233;
+        --ink-muted: #5b6472;
+        --rule: #d7dbe0;
+        --accent: #c2410c;
+        --good: #15803d;
+        --good-soft: #dcf3e3;
+        --warn: #b45309;
+        --warn-soft: #faecd8;
+        --pending: #64748b;
+        --pending-soft: #e7eaee;
+        --review: #2563eb;
+        --review-soft: #dbe7fc;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #12151b;
+          --surface: #1b1f27;
+          --ink: #e7e9ed;
+          --ink-muted: #9aa3b2;
+          --rule: #2a2f3a;
+          --accent: #f4834e;
+          --good: #4ade80;
+          --good-soft: #163524;
+          --warn: #fbbf24;
+          --warn-soft: #3a2c0f;
+          --pending: #94a3b8;
+          --pending-soft: #262b35;
+          --review: #60a5fa;
+          --review-soft: #1e293b;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        line-height: 1.6;
+      }
+      .page { max-width: 84rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+      .titleblock { margin-bottom: 2.5rem; }
+      .kicker {
+        font-family: "IBM Plex Mono", monospace; font-size: 0.75rem;
+        letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted);
+      }
+      h1 {
+        font-family: "IBM Plex Serif", serif; font-weight: 600; font-size: 2.25rem;
+        line-height: 1.2; text-wrap: balance; margin: 0.75rem 0 0; padding-bottom: 1rem;
+        border-bottom: 1px solid var(--rule);
+      }
+      .board { display: flex; gap: 1.25rem; align-items: flex-start; overflow-x: auto; padding-bottom: 1rem; }
+      .column { flex: 0 0 270px; }
+      .column-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+      .dot-ready { background: var(--pending); }
+      .dot-in-progress { background: var(--accent); }
+      .dot-in-review { background: var(--review); }
+      .dot-blocked { background: var(--warn); }
+      .dot-done { background: var(--good); }
+      .column-title {
+        font-family: "IBM Plex Mono", monospace; font-size: 0.75rem;
+        letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted);
+      }
+      .column-count {
+        margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.7rem;
+        color: var(--ink-muted); background: var(--pending-soft); border-radius: 999px;
+        padding: 0.05rem 0.5rem;
+      }
+      .cards { display: flex; flex-direction: column; gap: 0.65rem; }
+      .empty { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; color: var(--ink-muted); }
+      .card {
+        background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--pending);
+        border-radius: 4px; padding: 0.75rem 0.9rem;
+      }
+      .card.state-in-progress { border-left-color: var(--accent); }
+      .card.state-in-review { border-left-color: var(--review); }
+      .card.state-blocked { border-left-color: var(--warn); }
+      .card.state-done { border-left-color: var(--good); }
+      .card-prd { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--ink-muted); margin: 0 0 0.3rem; }
+      .card-title {
+        font-family: "IBM Plex Sans", sans-serif; font-weight: 500; font-size: 0.9rem;
+        color: var(--ink); text-decoration: none;
+      }
+      .card-title:hover { color: var(--accent); }
+      .card-blocked { margin: 0.4rem 0 0; font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; color: var(--warn); }
+    </style>
   </head>
-  <body class="bg-stone-50 text-slate-900 font-sans">
-    <main class="max-w-7xl mx-auto px-6 py-12">
-      <h1 class="text-2xl font-serif mb-8">
-        <!-- Unscoped: "Board" — Scoped: "Board — PRD #{{n}} {{title}}" -->
-      </h1>
-      <div class="grid grid-cols-5 gap-4 items-start">
+  <body>
+    <div class="page">
+      <header class="titleblock">
+        <span class="kicker">Board</span>
+        <h1><!-- Unscoped: "Board" — Scoped: "Board — PRD #{{n}} {{title}}" --></h1>
+      </header>
+      <div class="board">
         <!-- one column per state, in this order: Ready, In Progress, In Review, Blocked, Done -->
-        <div>
-          <h2 class="text-xs uppercase tracking-wider text-slate-500 mb-3">Ready <span class="text-slate-400">{{count}}</span></h2>
-          <div class="space-y-3">
-            <!-- one card per ticket in this column, or nothing if empty -->
+        <div class="column">
+          <div class="column-head">
+            <span class="dot dot-ready"></span>
+            <span class="column-title">Ready</span>
+            <span class="column-count">{{count}}</span>
+          </div>
+          <div class="cards">
+            <!-- one card per ticket in this column, or class="empty" text if none -->
           </div>
         </div>
       </div>
-    </main>
+    </div>
   </body>
 </html>
 ```
 
-**Card** — one `<div class="border border-slate-200 rounded-lg bg-white p-3">` per ticket:
+**Card** — one per ticket, `state-{{in-progress|in-review|blocked|done}}` matching its column (Ready needs no modifier — the base border color already reads as pending):
 
 ```html
-<div class="border border-slate-200 rounded-lg bg-white p-3">
+<div class="card state-{{in-progress|in-review|blocked|done}}">
   <!-- Unscoped only: which PRD this ticket belongs to -->
-  <p class="text-xs text-slate-400">PRD #{{prd-number}} · {{prd-title}}</p>
-  <a href="{{ticket url}}" target="_blank" class="text-sm font-medium">#{{number}} {{title}}</a>
+  <p class="card-prd">PRD #{{prd-number}} · {{prd-title}}</p>
+  <a href="{{ticket url}}" target="_blank" class="card-title">#{{number}} {{title}}</a>
   <!-- only if a Blocked-by line was found and references a still-open issue -->
-  <p class="text-xs text-amber-600 mt-1">Blocked by: {{text}}</p>
+  <p class="card-blocked">Blocked by: {{text}}</p>
 </div>
 ```
 
-No tickets at all (a PRD published but `/to-tickets` hasn't run, or truly nothing found) → a single muted line in place of the grid: `No tickets yet.`
+No tickets at all (a PRD published but `/to-tickets` hasn't run, or truly nothing found) → a single `<p class="empty">` in place of the grid: `No tickets yet.`
 
 ## Report
 
