@@ -5,7 +5,7 @@ description: Render the ticket pipeline as a single self-contained kanban HTML f
 
 # Render Board
 
-Turn the live label state of every ticket into a kanban board — no server, no build step, nothing beyond the Google Fonts link the file loads at view time. Shares its visual system with `render-prd` — same tokens, same IBM Plex type family — so the board and the PRD doc read as one product.
+Turn the live label state of every ticket into a kanban board — no server, no build step, no external dependency at all beyond system fonts. Shares its visual system with `render-prd` — same tokens, same font stacks — so the board and the PRD doc read as one product.
 
 **Argument:** an optional PRD issue number. `/render-board` boards every open PRD's tickets; `/render-board 12` scopes to one PRD.
 
@@ -38,7 +38,7 @@ Write to `<tmpdir>/tars-board.html` (scoped: `<tmpdir>/tars-board-<n>.html`), wh
 
 HTML-escape every title (`&`→`&amp;`, `<`→`&lt;`, `>`→`&gt;`) — issue titles are untrusted text.
 
-The design is the same **spec sheet** system `render-prd` uses — title block, IBM Plex Serif/Sans/Mono, cool paper ground with a rust-orange accent — extended with one more semantic token, `--review`, for the In Review column that render-prd's ticket cards don't need. Copy the tokens and fonts exactly so the two pages match.
+The design is the same **spec sheet** system `render-prd` uses — same exact tokens and system font stacks (no Google Fonts, no Tailwind), espresso ground with a faint drafting grid, amber accent — extended with one more semantic token, `--review` (a blue-grey, borrowed from the same reference page's second actor color), for the In Review column that render-prd's ticket cards don't need.
 
 ```html
 <!doctype html>
@@ -47,101 +47,99 @@ The design is the same **spec sheet** system `render-prd` uses — title block, 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Board — tars</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
     <style>
       :root {
-        --bg: #eef0f2;
-        --surface: #ffffff;
-        --ink: #1a2233;
-        --ink-muted: #5b6472;
-        --rule: #d7dbe0;
-        --accent: #c2410c;
-        --good: #15803d;
-        --good-soft: #dcf3e3;
-        --warn: #b45309;
-        --warn-soft: #faecd8;
-        --pending: #64748b;
-        --pending-soft: #e7eaee;
-        --review: #2563eb;
-        --review-soft: #dbe7fc;
+        --bg: #171410;
+        --surface: #1e1a14;
+        --surface-2: #241f17;
+        --ink: #ede8dc;
+        --ink-dim: #a79c88;
+        --line: #3a342a;
+        --grid-line: rgba(237, 232, 220, 0.045);
+        --accent: #d9a441;
+        --accent-soft: rgba(217, 164, 65, 0.12);
+        --ok: #6fb88a;
+        --warn: #d97748;
+        --review: #7c93a8;
+        --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas,
+          "Liberation Mono", Menlo, monospace;
+        --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia,
+          "Times New Roman", serif;
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         :root {
-          --bg: #12151b;
-          --surface: #1b1f27;
-          --ink: #e7e9ed;
-          --ink-muted: #9aa3b2;
-          --rule: #2a2f3a;
-          --accent: #f4834e;
-          --good: #4ade80;
-          --good-soft: #163524;
-          --warn: #fbbf24;
-          --warn-soft: #3a2c0f;
-          --pending: #94a3b8;
-          --pending-soft: #262b35;
-          --review: #60a5fa;
-          --review-soft: #1e293b;
+          --bg: #efeae0;
+          --surface: #e7e0d2;
+          --surface-2: #e1d9c8;
+          --ink: #23201a;
+          --ink-dim: #6b6252;
+          --line: #cfc6b0;
+          --grid-line: rgba(35, 32, 26, 0.05);
+          --accent: #a6741f;
+          --accent-soft: rgba(166, 116, 31, 0.1);
+          --ok: #3f8562;
+          --warn: #a8502e;
+          --review: #4c6478;
         }
       }
       * { box-sizing: border-box; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       body {
         margin: 0;
-        background: var(--bg);
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 34px 34px;
         color: var(--ink);
-        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        font-family: var(--font-serif);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
       }
       .page { max-width: 84rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
-      .titleblock { margin-bottom: 2.5rem; }
+      .titleblock { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2.5rem; }
       .kicker {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.75rem;
-        letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted);
+        font-family: var(--font-mono); font-size: 0.75rem;
+        letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent);
       }
       h1 {
-        font-family: "IBM Plex Serif", serif; font-weight: 600; font-size: 2.25rem;
-        line-height: 1.2; text-wrap: balance; margin: 0.75rem 0 0; padding-bottom: 1rem;
-        border-bottom: 1px solid var(--rule);
+        font-family: var(--font-mono); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.35rem);
+        letter-spacing: -0.01em; margin: 0; text-wrap: balance;
       }
       .board { display: flex; gap: 1.25rem; align-items: flex-start; overflow-x: auto; padding-bottom: 1rem; }
       .column { flex: 0 0 270px; }
       .column-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; }
-      .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-      .dot-ready { background: var(--pending); }
+      .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--ink-dim); }
       .dot-in-progress { background: var(--accent); }
       .dot-in-review { background: var(--review); }
       .dot-blocked { background: var(--warn); }
-      .dot-done { background: var(--good); }
+      .dot-done { background: var(--ok); }
       .column-title {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.75rem;
-        letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted);
+        font-family: var(--font-mono); font-size: 0.75rem;
+        letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim);
       }
       .column-count {
-        margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.7rem;
-        color: var(--ink-muted); background: var(--pending-soft); border-radius: 999px;
+        margin-left: auto; font-family: var(--font-mono); font-size: 0.7rem;
+        color: var(--ink-dim); background: var(--surface-2); border-radius: 999px;
         padding: 0.05rem 0.5rem;
       }
       .cards { display: flex; flex-direction: column; gap: 0.65rem; }
-      .empty { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; color: var(--ink-muted); }
+      .empty { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-dim); }
       .card {
-        background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--pending);
-        border-radius: 4px; padding: 0.75rem 0.9rem;
+        background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--line);
+        border-radius: 8px; padding: 0.75rem 0.9rem;
       }
       .card.state-in-progress { border-left-color: var(--accent); }
       .card.state-in-review { border-left-color: var(--review); }
       .card.state-blocked { border-left-color: var(--warn); }
-      .card.state-done { border-left-color: var(--good); }
-      .card-prd { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--ink-muted); margin: 0 0 0.3rem; }
+      .card.state-done { border-left-color: var(--ok); }
+      .card-prd { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim); margin: 0 0 0.3rem; }
       .card-title {
-        font-family: "IBM Plex Sans", sans-serif; font-weight: 500; font-size: 0.9rem;
+        font-family: var(--font-serif); font-weight: 500; font-size: 0.92rem;
         color: var(--ink); text-decoration: none;
       }
       .card-title:hover { color: var(--accent); }
-      .card-blocked { margin: 0.4rem 0 0; font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; color: var(--warn); }
+      .card-blocked { margin: 0.4rem 0 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--warn); }
     </style>
   </head>
   <body>
@@ -154,7 +152,7 @@ The design is the same **spec sheet** system `render-prd` uses — title block, 
         <!-- one column per state, in this order: Ready, In Progress, In Review, Blocked, Done -->
         <div class="column">
           <div class="column-head">
-            <span class="dot dot-ready"></span>
+            <span class="dot"></span>
             <span class="column-title">Ready</span>
             <span class="column-count">{{count}}</span>
           </div>
@@ -168,7 +166,7 @@ The design is the same **spec sheet** system `render-prd` uses — title block, 
 </html>
 ```
 
-**Card** — one per ticket, `state-{{in-progress|in-review|blocked|done}}` matching its column (Ready needs no modifier — the base border color already reads as pending):
+**Card** — one per ticket, `state-{{in-progress|in-review|blocked|done}}` matching its column (Ready needs no modifier — the base neutral border already reads as untouched):
 
 ```html
 <div class="card state-{{in-progress|in-review|blocked|done}}">

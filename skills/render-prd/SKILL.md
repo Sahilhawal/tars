@@ -43,7 +43,7 @@ Renders straight off disk — no `gh` calls except one optional lookup for a Git
 
 ## Scaffold
 
-The design is a **spec sheet**, not a blog post: a title block up top (kicker + status pill, like a drawing's stamp), IBM Plex Serif/Sans/Mono for headings/body/data, a cool paper ground with a rust-orange accent used only for links and the current state. `marked` and `mermaid` load from CDN for parsing; everything visual is hand-authored CSS below — copy it exactly, don't reintroduce Tailwind.
+The design is a **spec sheet**, not a blog post: an amber eyebrow, a mono headline, prose in a warm literary serif, all on an espresso-toned ground with a faint drafting grid behind the text. These are the exact tokens and system font stacks from a hand-built reference page — copy them exactly, don't approximate or reintroduce Tailwind/Google Fonts. Mono carries every piece of structural data (eyebrow, ticket numbers, code, table headers); serif carries the prose. Amber is the one accent — links, the eyebrow, the active state; ok/warn are status-only, never decoration. `marked` and `mermaid` load from CDN for parsing; everything visual is hand-authored CSS.
 
 **The PRD/spec body is markdown and may contain backticks, quotes, or `</script>`-like text — never splice it into a JS string literal.** Put it, HTML-escaped (`&`→`&amp;`, `<`→`&lt;`, `>`→`&gt;`), inside a `<template>` element instead, and read `.content.textContent` from it at render time. That sidesteps every escaping hazard at once.
 
@@ -56,81 +56,81 @@ The body may contain fenced ` ```mermaid ` blocks (e.g. the "Feature Flows" sect
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{title}} — tars</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
       :root {
-        --bg: #eef0f2;
-        --surface: #ffffff;
-        --ink: #1a2233;
-        --ink-muted: #5b6472;
-        --rule: #d7dbe0;
-        --accent: #c2410c;
-        --good: #15803d;
-        --good-soft: #dcf3e3;
-        --warn: #b45309;
-        --warn-soft: #faecd8;
-        --pending: #64748b;
-        --pending-soft: #e7eaee;
+        --bg: #171410;
+        --surface: #1e1a14;
+        --surface-2: #241f17;
+        --ink: #ede8dc;
+        --ink-dim: #a79c88;
+        --line: #3a342a;
+        --grid-line: rgba(237, 232, 220, 0.045);
+        --accent: #d9a441;
+        --accent-soft: rgba(217, 164, 65, 0.12);
+        --ok: #6fb88a;
+        --warn: #d97748;
+        --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas,
+          "Liberation Mono", Menlo, monospace;
+        --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia,
+          "Times New Roman", serif;
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         :root {
-          --bg: #12151b;
-          --surface: #1b1f27;
-          --ink: #e7e9ed;
-          --ink-muted: #9aa3b2;
-          --rule: #2a2f3a;
-          --accent: #f4834e;
-          --good: #4ade80;
-          --good-soft: #163524;
-          --warn: #fbbf24;
-          --warn-soft: #3a2c0f;
-          --pending: #94a3b8;
-          --pending-soft: #262b35;
+          --bg: #efeae0;
+          --surface: #e7e0d2;
+          --surface-2: #e1d9c8;
+          --ink: #23201a;
+          --ink-dim: #6b6252;
+          --line: #cfc6b0;
+          --grid-line: rgba(35, 32, 26, 0.05);
+          --accent: #a6741f;
+          --accent-soft: rgba(166, 116, 31, 0.1);
+          --ok: #3f8562;
+          --warn: #a8502e;
         }
       }
       * { box-sizing: border-box; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       body {
         margin: 0;
-        background: var(--bg);
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 34px 34px;
         color: var(--ink);
-        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        font-family: var(--font-serif);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
       }
       .page { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
-      .titleblock { margin-bottom: 3rem; }
-      .titleblock-row {
-        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-        padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule);
-      }
+      .titleblock { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 3rem; }
       .kicker {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.75rem;
-        letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted);
+        font-family: var(--font-mono); font-size: 0.75rem;
+        letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent);
       }
       h1 {
-        font-family: "IBM Plex Serif", serif; font-weight: 600; font-size: 2.25rem;
-        line-height: 1.2; text-wrap: balance; margin: 0.75rem 0 0.5rem;
+        font-family: var(--font-mono); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.35rem);
+        letter-spacing: -0.01em; margin: 0; text-wrap: balance;
       }
-      .meta-row { margin-top: 0.25rem; }
+      .meta-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.25rem; }
       .meta-link {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.8rem;
+        font-family: var(--font-mono); font-size: 0.8rem;
         color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent;
       }
       .meta-link:hover { border-bottom-color: var(--accent); }
       .status-pill {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; letter-spacing: 0.04em;
-        text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 999px; white-space: nowrap;
+        display: inline-flex; align-items: center; gap: 0.5rem; width: fit-content;
+        padding: 0.4rem 0.85rem; border: 1px solid var(--line); border-radius: 999px;
+        background: var(--surface); font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-dim);
       }
-      .status-open, .status-draft { background: var(--pending-soft); color: var(--pending); }
-      .status-closed, .status-approved { background: var(--good-soft); color: var(--good); }
-      .prose h2 { font-family: "IBM Plex Serif", serif; font-weight: 600; font-size: 1.4rem; margin: 2.5rem 0 1rem; }
-      .prose h3 { font-family: "IBM Plex Serif", serif; font-weight: 600; font-size: 1.1rem; margin: 2rem 0 0.75rem; }
+      .status-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--ink-dim); }
+      .status-approved::before, .status-closed::before { background: var(--ok); }
+      .status-draft::before, .status-open::before { background: var(--accent); }
+      .prose h2 { font-family: var(--font-mono); font-weight: 700; font-size: 1.15rem; margin: 2.5rem 0 1rem; }
+      .prose h3 { font-family: var(--font-mono); font-weight: 700; font-size: 0.98rem; margin: 2rem 0 0.75rem; }
       .prose p { margin: 0 0 1rem; }
       .prose ul, .prose ol { margin: 0 0 1rem; padding-left: 1.4rem; }
       .prose li { margin: 0.3rem 0; }
@@ -138,60 +138,60 @@ The body may contain fenced ` ```mermaid ` blocks (e.g. the "Feature Flows" sect
       .prose strong { font-weight: 600; }
       .prose blockquote {
         margin: 1.25rem 0; padding: 0.25rem 0 0.25rem 1rem;
-        border-left: 2px solid var(--accent); color: var(--ink-muted);
+        border-left: 2px solid var(--accent); color: var(--ink-dim);
       }
       .prose code {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.85em;
-        background: var(--pending-soft); padding: 0.1em 0.35em; border-radius: 4px;
+        font-family: var(--font-mono); font-size: 0.85em;
+        background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px;
       }
       .prose pre {
-        background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
         padding: 1rem; overflow-x: auto;
       }
       .prose pre code { background: none; padding: 0; }
       .prose table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.9rem; }
-      .prose th, .prose td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--rule); }
+      .prose th, .prose td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); }
       .prose th {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.75rem;
-        text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted);
+        font-family: var(--font-mono); font-size: 0.75rem;
+        text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-dim);
       }
       .prose .mermaid {
-        background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
         padding: 1.25rem; margin: 1.5rem 0; overflow-x: auto;
       }
       .tickets { margin-top: 3.5rem; }
-      .tickets h2 { font-family: "IBM Plex Serif", serif; font-weight: 600; font-size: 1.4rem; margin: 0 0 1rem; }
+      .tickets h2 { font-family: var(--font-mono); font-weight: 700; font-size: 1.15rem; margin: 0 0 1rem; }
       .ticket-list { display: flex; flex-direction: column; gap: 0.75rem; }
-      .ticket-empty { font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; color: var(--ink-muted); }
+      .ticket-empty { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-dim); }
       .ticket-card {
-        background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--pending);
-        border-radius: 4px; padding: 0.85rem 1rem;
+        background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--line);
+        border-radius: 8px; padding: 0.85rem 1rem;
       }
-      .ticket-card.ticket-done { border-left-color: var(--good); }
+      .ticket-card.ticket-done { border-left-color: var(--ok); }
       .ticket-card.ticket-blocked { border-left-color: var(--warn); }
       .ticket-card.ticket-in-progress { border-left-color: var(--accent); }
       .ticket-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
-      .ticket-number { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; color: var(--ink-muted); }
-      .ticket-title { font-family: "IBM Plex Sans", sans-serif; font-weight: 500; color: var(--ink); text-decoration: none; }
+      .ticket-number { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-dim); }
+      .ticket-title { font-family: var(--font-serif); font-weight: 500; color: var(--ink); text-decoration: none; }
       .ticket-title:hover { color: var(--accent); }
       .ticket-meta { margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
       .chip {
-        font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; letter-spacing: 0.02em;
-        padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--pending-soft); color: var(--ink-muted);
+        font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.02em;
+        padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--surface-2); color: var(--ink-dim);
       }
-      .ticket-blocked { margin: 0.5rem 0 0; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--warn); }
+      .ticket-blocked { margin: 0.5rem 0 0; font-family: var(--font-mono); font-size: 0.78rem; color: var(--warn); }
     </style>
   </head>
   <body>
     <div class="page">
       <header class="titleblock">
-        <div class="titleblock-row">
-          <span class="kicker"><!-- GitHub mode: "PRD #{{number}}" — Local mode: "Draft spec" --></span>
-          <span class="status-pill status-{{state or status, lowercased}}">{{state or status}}</span>
-        </div>
+        <p class="kicker"><!-- GitHub mode: "PRD #{{number}}" — Local mode: "Draft spec" --></p>
         <h1>{{title}}</h1>
-        <!-- only if a URL is known (GitHub mode, or local mode with a resolved Issue link) -->
-        <div class="meta-row"><a href="{{url}}" target="_blank" class="meta-link">View on GitHub ↗</a></div>
+        <div class="meta-row">
+          <span class="status-pill status-{{state or status, lowercased}}">{{state or status}}</span>
+          <!-- only if a URL is known (GitHub mode, or local mode with a resolved Issue link) -->
+          <a href="{{url}}" target="_blank" class="meta-link">View on GitHub ↗</a>
+        </div>
       </header>
 
       <template id="prd-body-source">{{HTML-escaped body}}</template>
@@ -215,13 +215,13 @@ The body may contain fenced ` ```mermaid ` blocks (e.g. the "Feature Flows" sect
         div.textContent = block.textContent;
         pre.replaceWith(div);
       });
-      const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const light = window.matchMedia("(prefers-color-scheme: light)").matches;
       mermaid.initialize({
         startOnLoad: true,
         theme: "base",
-        themeVariables: dark
-          ? { primaryColor: "#1b1f27", primaryTextColor: "#e7e9ed", primaryBorderColor: "#2a2f3a", lineColor: "#9aa3b2", fontFamily: "IBM Plex Sans" }
-          : { primaryColor: "#ffffff", primaryTextColor: "#1a2233", primaryBorderColor: "#d7dbe0", lineColor: "#5b6472", fontFamily: "IBM Plex Sans" },
+        themeVariables: light
+          ? { primaryColor: "#e7e0d2", primaryTextColor: "#23201a", primaryBorderColor: "#cfc6b0", lineColor: "#6b6252", fontFamily: "Georgia, serif" }
+          : { primaryColor: "#1e1a14", primaryTextColor: "#ede8dc", primaryBorderColor: "#3a2b1e", lineColor: "#a79c88", fontFamily: "Georgia, serif" },
       });
     </script>
   </body>
