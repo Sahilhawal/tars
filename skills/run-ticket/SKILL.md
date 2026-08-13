@@ -7,7 +7,7 @@ description: Run one ticket through the autonomous pipeline — plan, implement 
 
 Drive one ticket through the full autonomous loop. You (the orchestrator) coordinate sub-agents; you do not write product code yourself.
 
-**Argument:** a ticket issue number (e.g. `/run-ticket 14`). Tickets are GitHub issues; status is tracked with labels (`tars:ready`, `tars:in-progress`, `tars:blocked`; closed = done). If the project uses the local-files fallback instead, the same loop applies with ticket files under `docs/tickets/` and a `**Status:**` line in place of labels.
+**Argument:** a ticket issue number (e.g. `/run-ticket 14`), optionally followed by `--worktree` (e.g. `/run-ticket 14 --worktree`) to run this ticket in its own git worktree instead of the current working tree — use this when another session is already active in the current one and you don't want the two to collide. Tickets are GitHub issues; status is tracked with labels (`tars:ready`, `tars:in-progress`, `tars:blocked`; closed = done). If the project uses the local-files fallback instead, the same loop applies with ticket files under `docs/tickets/` and a `**Status:**` line in place of labels.
 
 ## Progress log
 
@@ -20,7 +20,9 @@ Every step below, and every sub-agent it spawns, appends a line to a shared stat
 - Check its **Blocked by** references: every blocking issue must be closed. If not, stop and name the open blockers.
 - Check the acceptance criteria are machine-checkable. Vague criteria → stop, invoke `grilling` with the user to sharpen them (update the issue body after).
 - `gh issue edit <N> --remove-label tars:ready --add-label tars:in-progress`
-- Create branch `task/<N>-<slug>` from an up-to-date `main`.
+- **Branch and working tree:**
+  - Default: create branch `task/<N>-<slug>` from an up-to-date `main`, in the current working tree.
+  - `--worktree` passed: create a dedicated worktree instead, so this ticket never touches whatever the current working tree is already doing — `git worktree add ../<repo>.worktrees/task-<N>-<slug> -b task/<N>-<slug> main`. Bootstrap it exactly as `/run-frontier`'s step 4 does (copy gitignored `.env*` files, apply any per-worktree port/DB overrides from CLAUDE.md, install dependencies by lockfile — never copy `node_modules`). Every step below then runs with that worktree as the working directory.
 - Log it: `echo "$(date '+%Y-%m-%d %H:%M:%S') #<N> orchestrator: starting run-ticket" >> "$(git rev-parse --git-common-dir)/tars-status.log"`
 
 ### 1. Plan
@@ -47,6 +49,7 @@ On APPROVE:
 - `gh pr create --base main --head task/<N>-<slug> --title "feat: <ticket title> (#<N>)" --body "Closes #<N>."` — the `Closes #<N>` keyword auto-closes the ticket when the PR is merged.
 - `gh issue edit <N> --remove-label tars:in-progress --add-label tars:in-review`.
 - Append one line to `docs/PROGRESS.md`: ticket #, branch, PR link, one-sentence outcome.
+- Ran with `--worktree`: `git worktree remove ../<repo>.worktrees/task-<N>-<slug>` — when the group dir is empty, remove `../<repo>.worktrees/` too.
 - Log `#<N> orchestrator: PR opened`.
 
 tars never merges. Opening the PR is the last automated step — merging `task/<N>-<slug>` into `main` is yours, whenever you're ready.
@@ -55,7 +58,7 @@ tars never merges. Opening the PR is the last automated step — merging `task/<
 One screen to the user: verdict, cycles used, gates run, the PR link, what to demo. Then name the next runnable tickets — open `tars:ready` issues whose blockers are all closed (`gh issue list --label tars:ready`). Note that a blocker only clears once its ticket's PR is actually merged, not just opened. Do not auto-start the next ticket — the user decides, or says "run the frontier".
 
 ## Hard rules for the orchestrator
-- One ticket at a time per working tree. To run independent tickets concurrently, use `/run-frontier` — it gives each ticket its own git worktree and serializes PR creation.
+- One ticket at a time per working tree. Pass `--worktree` to isolate a single ticket in its own worktree (e.g. another session is already active in the current one). To run several tickets concurrently, use `/run-frontier` — it gives each ticket its own git worktree and serializes PR creation.
 - Never open a PR without `<verdict>APPROVE</verdict>` from the reviewer sub-agent. Your own reading of the diff is not approval.
 - Never merge to `main`. That's the user's call, always.
 - Never edit the acceptance criteria mid-loop to make a failing ticket pass. Criteria change = stop, back to the user.
