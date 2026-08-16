@@ -32,5 +32,6 @@ Bootstrap the current project so the tars loop can run in it. Idempotent: never 
    - `CLAUDE.md` — the gate commands, conventions (conventional commits, branch naming `task/<issue>-<slug>`), and the standing rule that no change merges with red gates.
    - `CONTEXT.md` — domain glossary stub. Ask the user for 3–5 core domain terms with one-line definitions to seed it.
    - `docs/specs/`, `docs/adr/` and `docs/PROGRESS.md` (header `# Progress`, section `## Log`).
+   - `.github/workflows/tars-cleanup.yml` — copy from this plugin's `templates/tars-cleanup.yml` verbatim (skip if the file already exists). `run-ticket` never merges — merging is always the user's call, on their own schedule — so nothing in the agent loop is running at the moment a ticket's PR actually lands to react to it. This workflow is that reaction: on every merged PR, it strips the now-stale `tars:ready`/`tars:in-progress`/`tars:in-review`/`tars:blocked` label off whatever issue(s) the PR closed, and closes the parent PRD issue once every one of its sub-issues is closed. Without it, tickets go on showing an "in-review" label forever after merge, and PRDs never close even at 100% sub-issue completion.
 
 6. **Report** what was created and the next move: grill the user about the first feature, then `/to-spec`.

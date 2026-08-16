@@ -1,0 +1,80 @@
+name: tars-cleanup
+
+# run-ticket never merges (that's always the user's call, whenever they get
+# to it) — so nothing in the agent loop is running at the moment a ticket's
+# PR actually lands. This workflow is what reacts to that moment instead:
+# GitHub auto-closes the ticket issue itself (via the PR body's "Closes #N"),
+# but nothing strips its now-stale pipeline-state label, and nothing ever
+# closes the parent PRD once every sub-issue under it is done. Both of those
+# are handled here, on every merge.
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Strip stale ticket labels + cascade-close finished PRDs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+
+          # Issue numbers this PR closed, from "Closes/Fixes/Resolves #N"
+          # (the exact keywords GitHub itself recognizes for auto-close).
+          ticket_numbers=$(echo "$PR_BODY" \
+            | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' \
+            | grep -oE '[0-9]+' | sort -u)
+
+          if [ -z "$ticket_numbers" ]; then
+            echo "No linked issues in PR body; nothing to clean up."
+            exit 0
+          fi
+
+          for n in $ticket_numbers; do
+            echo "## Ticket #$n"
+
+            # GitHub already closed it via the PR merge — the pipeline-state
+            # label (whatever it was left on) is now just stale.
+            gh issue edit "$n" --repo "$REPO" \
+              --remove-label "tars:ready" \
+              --remove-label "tars:in-progress" \
+              --remove-label "tars:in-review" \
+              --remove-label "tars:blocked" \
+              2>/dev/null || true
+
+            # The ticket template always carries a "## Parent PRD" section
+            # with a "- #<N>" line — read the parent back out of it rather
+            # than querying GitHub's sub-issues graph in reverse.
+            body=$(gh issue view "$n" --repo "$REPO" --json body --jq .body)
+            prd=$(echo "$body" \
+              | awk '/^## Parent PRD/{found=1; next} found && /^- #[0-9]+/{print; exit}' \
+              | grep -oE '[0-9]+' | head -1)
+
+            if [ -z "$prd" ]; then
+              echo "  no parent PRD referenced"
+              continue
+            fi
+
+            echo "  parent PRD #$prd"
+            open_children=$(gh api "repos/$REPO/issues/$prd/sub_issues" \
+              --jq '[.[] | select(.state == "open")] | length' 2>/dev/null || echo "unknown")
+
+            if [ "$open_children" = "0" ]; then
+              echo "  every sub-issue closed -> closing PRD #$prd"
+              gh issue close "$prd" --repo "$REPO" \
+                --comment "All sub-issues closed — every ticket under this PRD is done." \
+                || true
+            else
+              echo "  $open_children sub-issue(s) still open, leaving PRD open"
+            fi
+          done

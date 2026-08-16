@@ -52,7 +52,7 @@ On APPROVE:
 - Ran with `--worktree`: `git worktree remove ../<repo>.worktrees/task-<N>-<slug>` — when the group dir is empty, remove `../<repo>.worktrees/` too.
 - Log `#<N> orchestrator: PR opened`.
 
-tars never merges. Opening the PR is the last automated step — merging `task/<N>-<slug>` into `main` is yours, whenever you're ready.
+tars never merges. Opening the PR is the last automated step — merging `task/<N>-<slug>` into `main` is yours, whenever you're ready. When you do, the project's `tars-cleanup` GitHub Actions workflow (installed by `setup-tars`) takes over: it strips the `tars:in-review` label GitHub's auto-close leaves stale, and closes the parent PRD once every sub-issue under it is closed.
 
 ### 5. Report
 One screen to the user: verdict, cycles used, gates run, the PR link, what to demo. Then name the next runnable tickets — open `tars:ready` issues whose blockers are all closed (`gh issue list --label tars:ready`). Note that a blocker only clears once its ticket's PR is actually merged, not just opened. Do not auto-start the next ticket — the user decides, or says "run the frontier".
